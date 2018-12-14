@@ -1,4 +1,4 @@
-#Kik Node API
+# Kik Node API
 
 A chatting API for kik built with Node.js, based on <https://github.com/tomer8007/kik-bot-api-unofficial>
 
@@ -14,11 +14,11 @@ npm install kik-node-api
 ```
 -->
 
-##Usage
+## Usage
 
 * [Getting started](#getting-started)
 
-#####Events
+##### Events
 
 1. [The Basics](#the-basics)
     * [Authenticated](#authenticated)
@@ -28,14 +28,14 @@ npm install kik-node-api
 3. [Private Events](#private-events)
     * [Received Private Message](#received-private-message)
 
-#####Requests
+##### Requests
 
 1. [Group Requests](#group-requests)
 2. [Private Requests](#private-requests)
 
 ---
 
-###Getting Started
+### Getting Started
 
 You can use the API by creating an instance of `KikClient`, you'll use it to listen
 to events and send requests to kik
@@ -55,8 +55,8 @@ Kik = new KikClient({
 Kik.connect()
 ```
 
-###Events
-####The Basics
+### Events
+#### The Basics
 `KikClient` uses Node's [Event Emitter](https://nodejs.org/api/events.html) class
 to handle events, all events are attached in the following way:
 
@@ -67,21 +67,21 @@ Kik.on(eventname, (params) => {
 ```
 
 Below are the details of all events emitted by the `KikClient` class
-#####Authenticated
+##### Authenticated
 
-#####Received Roster
+##### Received Roster
 
 
-####Group Events
-#####Received Group Message
+#### Group Events
+##### Received Group Message
 
-####Private Events
-#####Received Private Message
+#### Private Events
+##### Received Private Message
 
-###Requests
-####Group Requests
+### Requests
+#### Group Requests
 
-####Private Requests
+#### Private Requests
 
 <!--
 ## Contributing

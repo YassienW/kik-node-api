@@ -37,9 +37,11 @@ Kik.on("userleftgroup", (group, user, kickedBy) => {
 Kik.on("userjoinedgroup", (group, user, invitedBy) => {
     console.log(`GROUP:${group.code}: ${user} joined the group`)
 })
+
 //private messaging events
 Kik.on("receivedprivatemsg", (sender, msg) => {
-    console.log(`PRIVATE[${sender.displayName}]: ${msg}`)
+    console.log(`PRIVATE: [${sender.displayName}]: ${msg}`)
 })
+
 Kik.connect()
 

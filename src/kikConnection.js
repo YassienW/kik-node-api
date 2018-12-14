@@ -31,8 +31,8 @@ class KikConnection extends EventEmitter{
     disconnect(){
         this.socket.destroy()
     }
-    sendXmlFromJson(json, removeClosingTag){
-        let xml = convert.json2xml(json, {compact: true})
+    sendXmlFromJs(js, removeClosingTag){
+        let xml = convert.js2xml(js, {compact: true})
         xml = (removeClosingTag? xml.slice(0, xml.length - 2) + ">" : xml)
         logger.log(`Writing XML to server: ${xml}`)
         this.socket.write(xml)

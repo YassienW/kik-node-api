@@ -14,6 +14,8 @@ class KikClient extends EventEmitter {
         super()
 
         this.params = params
+
+        //used for tracking
         this.groups = []
         this.friends = []
         this.users = []
@@ -58,25 +60,25 @@ class KikClient extends EventEmitter {
     }
     //we have to do this before requesting the kik node, but not before auth
     initiateNodeConnection(){
-        this.connection.sendXmlFromJson(initialRequest(), true)
+        this.connection.sendXmlFromJs(initialRequest(), true)
     }
     getNode(){
-        this.connection.sendXmlFromJson(getNode(this.params.username, this.params.password))
+        this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password))
     }
     authRequest(){
-        this.connection.sendXmlFromJson(auth(this.params.username, this.params.password, this.params.kikNode), true)
+        this.connection.sendXmlFromJs(auth(this.params.username, this.params.password, this.params.kikNode), true)
     }
     getRoster(){
-        this.connection.sendXmlFromJson(getRoster())
+        this.connection.sendXmlFromJs(getRoster())
     }
     sendGroupMessage(groupJid, msg){
-        this.connection.sendXmlFromJson(sendGroupMessage(groupJid, msg))
+        this.connection.sendXmlFromJs(sendGroupMessage(groupJid, msg))
     }
     sendPrivateMessage(userJid, msg){
 
     }
     getJidInfo(jids){
-        this.connection.sendXmlFromJson(jidInfo(jids))
+        this.connection.sendXmlFromJs(jidInfo(jids))
     }
 }
 module.exports = KikClient

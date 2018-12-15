@@ -1,12 +1,13 @@
 crypto = require("../cryptoUtils")
 
-module.exports = (groupJid, msg) => {
+module.exports = (jid, msg, isGroup) => {
     let timestamp = new Date().getTime()
+    let type = (isGroup? "groupchat" : "chat")
     return({
         message: {
             _attributes: {
-                type: "groupchat",
-                to: groupJid,
+                type: type,
+                to: jid,
                 id: crypto.generateUUID(),
                 cts: timestamp
             },

@@ -6,7 +6,7 @@ const EventEmitter = require("events"),
     getNode = require("./requests/getNode"),
     auth = require("./requests/auth"),
     getRoster = require("./requests/getRoster"),
-    sendGroupMessage = require("./requests/sendGroupMessage"),
+    sendChatMessage = require("./requests/sendChatMessage"),
     jidInfo = require("./requests/getJidInfo")
 
 class KikClient extends EventEmitter {
@@ -72,10 +72,10 @@ class KikClient extends EventEmitter {
         this.connection.sendXmlFromJs(getRoster())
     }
     sendGroupMessage(groupJid, msg){
-        this.connection.sendXmlFromJs(sendGroupMessage(groupJid, msg))
+        this.connection.sendXmlFromJs(sendChatMessage(groupJid, msg, true))
     }
     sendPrivateMessage(userJid, msg){
-
+        this.connection.sendXmlFromJs(sendChatMessage(userJid, msg, false))
     }
     getJidInfo(jids){
         this.connection.sendXmlFromJs(jidInfo(jids))

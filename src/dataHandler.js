@@ -42,7 +42,7 @@ module.exports = (data, client) => {
             data.findAll("item").forEach((user) => {
                 users.push({
                     jid: user.attrs.jid,
-                    userName: user.find("username").text === "Username unavailable"? null : user.find("username").text,
+                    username: user.find("username").text === "Username unavailable"? null : user.find("username").text,
                     displayName: user.find("display-name").text,
                     //sometimes, when you are the user there is no pic (maybe there are other cases idk)
                     pic: user.find("pic") ? user.find("pic").text : null
@@ -74,7 +74,7 @@ module.exports = (data, client) => {
                     let kickedBy = (status.text.includes("removed")? status.text.split("has")[0].trim() : null)
 
                     client.emit("userleftgroup", group, user, kickedBy)
-                }else if(status.includes("joined")){
+                }else if(status.text.includes("joined")){
                     client.getJidInfo(data.find("status").attrs.jid)
 
                     //i can't return user info since i have to recieve the getJidInfo response first for a user that just joined,

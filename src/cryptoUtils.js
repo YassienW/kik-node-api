@@ -1,21 +1,20 @@
-const forge = require("node-forge"),
+const crypto = require("crypto"),
     uuidv4 = require("uuid/v4"),
     converter = require("hex2dec"),
     bigInt = require("big-integer"),
     cryptoUtils = module.exports
 
 cryptoUtils.generatePasskey = (username, password) => {
-    let sha1Password = forge.md.sha1.create().update(password).digest().toHex()
+    let sha1Password = crypto.createHash("sha1").update(password).digest("hex");
     let salt = username.toLowerCase() + "niCRwL7isZHny24qgLvy"
-    let key = forge.util.bytesToHex(forge.pkcs5.pbkdf2(sha1Password, salt, 8192, 16))
-    return key
+    return crypto.pbkdf2Sync(sha1Password, salt, 8192, 16, "sha1").toString("hex")
 }
 cryptoUtils.generateUUID = () => {
     let uuid = uuidv4()
-    //uuid = "f3ac58c3-ec33-4d07-ba22-a6354a27bbac"
-    let bytes = forge.util.hexToBytes(uuid.replace(/-/g, ""))
-    let msb = bigInt(converter.hexToDec(forge.util.bytesToHex(bytes.substring(0, 8))))
-    let lsb = bigInt(converter.hexToDec(forge.util.bytesToHex(bytes.substring(8))))
+    //remove the dashes
+    let bytes = Buffer.from(uuid.replace(/-/g, ""), "hex")
+    let msb = bigInt(converter.hexToDec(bytes.slice(0, 8).toString("hex")))
+    let lsb = bigInt(converter.hexToDec(bytes.slice(8).toString("hex")))
 
     let iArr = [[3, 6], [2, 5], [7, 1], [9, 5]]
     let i2 = bigInt("-1152921504606846976").and(msb).shiftRight(62)
@@ -62,13 +61,10 @@ cryptoUtils.generateCV = (versionInfo, timestamp, jid) => {
         "15BB2F38F64A00FF07834ED3A06D70C38FC18004F85CAB3C937D3F94B366E2552558929B98D088CF1C45CDC0" +
         "340755E4305698A7067F696F4ECFCEEAFBD720787537199BCAC674DAB54643359BAD3E229D588E324941941E" +
         "0270C355DC38F9560469B452C36560AD5AB9619B6EB33705"
-    let keySource = "hello" + forge.util.hexToBytes(apkSignatureHex) + versionInfo.version + versionInfo.sha1Digest + "bar"
-    let hmacKey = forge.util.encode64(forge.util.hexToBytes(forge.md.sha1.create().update(keySource).digest().toHex()))
+    let keySource = "hello" + Buffer.from(apkSignatureHex, "hex").toString("binary") + versionInfo.version + versionInfo.sha1Digest + "bar"
+    let hmacKey = crypto.createHash("sha1").update(keySource, "ascii").digest("base64")
     let hmacData = timestamp + ":" + jid
-    let hmac = forge.hmac.create()
-    hmac.start("sha1", hmacKey)
-    hmac.update(hmacData)
-    return hmac.digest().toHex()
+    return crypto.createHmac("sha1", hmacKey).update(hmacData).digest("hex")
 }
 cryptoUtils.generateSignature = (kikVersion, timestamp, jid, sid) => {
     let privateKeyPem = "-----BEGIN RSA PRIVATE KEY-----\nMIIBPAIBAAJBANEWUEINqV1KNG7Yie9GSM8t75ZvdTeqT7kOF40kvDHIp" +
@@ -77,16 +73,11 @@ cryptoUtils.generateSignature = (kikVersion, timestamp, jid, sid) => {
         "+8noQIhAPh5haTSGu0MFs0YiLRLqirJWXa4QPm4W5nz5VGKXaKtAiEA12tpUlkyxJBuuKCykIQbiUXHEwzFYbMHK5E" +
         "/uGkFoe0CIQC6uYgHPqVhcm5IHqHM6/erQ7jpkLmzcCnWXgT87ABF2QIhAIzrfyKXp1ZfBY9R0H4pbboHI4uatySKc" +
         "Q5XHlAMo9qhAiEA43zuIMknJSGwa2zLt/3FmVnuCInD6Oun5dbcYnqraJo=\n-----END RSA PRIVATE KEY----- "
-    let privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
-    let md = forge.md.sha256.create();
-    md.update(`${jid}:${kikVersion}:${timestamp}:${sid}`);
-    let signature = privateKey.sign(md);
-    signature = forge.util.encode64(signature).slice(0, -2)
-    signature = signature.replace("/+/g", "-")
-    signature = signature.replace("///g", "_")
-    return signature
+
+    let data = crypto.createHash("sha256").update(`${jid}:${kikVersion}:${timestamp}:${sid}`).digest("hex");
+    return crypto.createSign("RSA-SHA1").update(data).sign(privateKeyPem, "base64")
 }
-//receives an object and sorts it according to kik's sekrit crypto algorithms then returns it as JSON
+//receives an object and sorts it according to kik's sekrit crypto algorithms then returns it as JS object
 //if the object i return doesn't preserve order, i could return JSON instead
 cryptoUtils.sortPayload = (object) => {
     let map = new Map(Object.entries(object))
@@ -133,30 +124,20 @@ function payloadHash(map) {
     return (((hashBase ^ (arr[0] << hashOffset)) ^ (arr[5] << (hashOffset * 2))) ^ (arr[1] << hashOffset)) ^ arr[0]
 }
 function hashSubfunction(hashId, bytes){
-    let j = 0, digest
+    let j = 0,  buffer
     if(hashId === 0){
-        let md = forge.md.sha256.create()
-        md.update(bytes)
-        digest = md.digest()
+        buffer = crypto.createHash("sha256").update(bytes).digest();
     }else if(hashId === 1){
-        let md = forge.md.sha1.create()
-        md.update(bytes)
-        digest = md.digest()
+        buffer = crypto.createHash("sha1").update(bytes).digest();
     }else{
-        let md = forge.md.md5.create()
-        md.update(bytes)
-        digest = md.digest()
+        buffer = crypto.createHash("md5").update(bytes).digest();
     }
-    //digest length must be initialized first since digest.getBytes() empties the digest
-    let digestLength = digest.length()
-    let digestData = digest.getBytes()
-    for (let i = 0; i < digestLength; i+=4){
-        j ^= ((((byteToSignedInt(digestData[i + 3])) << 24) | ((byteToSignedInt(digestData[i + 2])) << 16)) | ((byteToSignedInt(digestData[i + 1])) << 8)) | (byteToSignedInt(digestData[i]))
+    for (let i = 0; i < buffer.length; i+=4){
+        j ^= ((((byteToSignedInt(buffer[i + 3])) << 24) | ((byteToSignedInt(buffer[i + 2])) << 16)) | ((byteToSignedInt(buffer[i + 1])) << 8)) | (byteToSignedInt(buffer[i]))
     }
     return j
 }
 function byteToSignedInt(byte){
-    byte = parseInt(forge.util.bytesToHex(byte), 16)
     if (byte > 127){
         return (256 - byte) * -1
     }

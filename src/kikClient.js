@@ -1,7 +1,7 @@
 const EventEmitter = require("events"),
     KikConnection = require("./kikConnection"),
+    DataHandler = require("./handlers/dataHandler"),
     logger = require("./logger"),
-    dataHandler = require("./dataHandler")
     initialRequest = require("./requests/initialRequest"),
     getNode = require("./requests/getNode"),
     auth = require("./requests/auth"),
@@ -15,6 +15,7 @@ class KikClient extends EventEmitter {
     constructor(params){
         super()
 
+        this.dataHandler = new DataHandler(this)
         this.params = params
 
         //used for tracking
@@ -57,7 +58,7 @@ class KikClient extends EventEmitter {
             }
         })
         this.connection.on("data", (data) => {
-            dataHandler(data, this)
+            this.dataHandler.handleData(data)
         })
     }
     //we have to do this before requesting the kik node, but not before auth
@@ -70,8 +71,12 @@ class KikClient extends EventEmitter {
     authRequest(){
         this.connection.sendXmlFromJs(auth(this.params.username, this.params.password, this.params.kikNode), true)
     }
-    getRoster(){
-        this.connection.sendXmlFromJs(getRoster())
+    getRoster(callback){
+        let req = getRoster()
+        this.connection.sendXmlFromJs(req.xml)
+        if(callback){
+            this.callbackHandler.addCallback(req.id, callback)
+        }
     }
     sendGroupMessage(groupJid, msg){
         this.connection.sendXmlFromJs(sendChatMessage(groupJid, msg, true))

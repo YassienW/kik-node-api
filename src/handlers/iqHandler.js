@@ -10,7 +10,7 @@ module.exports = (client, callbacks, id, data) => {
     }else if(xmlns === "jabber:iq:roster"){
         let groups = [], friends = []
         //fill up friends
-        data.findAll("item").forEach((friend) => {
+        data.findAll("item").forEach(friend => {
             friends.push({
                 jid: friend.attrs.jid,
                 username: friend.find("username").text,
@@ -18,7 +18,7 @@ module.exports = (client, callbacks, id, data) => {
             })
         })
         //fill up groups
-        data.findAll("g").forEach((group) => {
+        data.findAll("g").forEach(group => {
             let users = []
             group.findAll("m").forEach((user) => {
                 users.push(user.text)
@@ -39,7 +39,7 @@ module.exports = (client, callbacks, id, data) => {
         }
     }else if(xmlns === "kik:iq:friend:batch"){
         let users = []
-        data.findAll("item").forEach((user) => {
+        data.findAll("item").forEach(user => {
             users.push({
                 jid: user.attrs.jid,
                 username: user.find("username").text === "Username unavailable"? null : user.find("username").text,

@@ -27,6 +27,7 @@ class KikClient extends EventEmitter {
             if(this.params.trackGroupInfo){
                 this.groups = groups
                 if(this.params.trackUserInfo){
+                    //perhaps i could combine and send to make it more efficient, depending on the rate limit
                     this.groups.forEach((group) => {
                         this.getJidInfo(group.users)
                     })
@@ -75,7 +76,7 @@ class KikClient extends EventEmitter {
         let req = getRoster()
         this.connection.sendXmlFromJs(req.xml)
         if(callback){
-            this.callbackHandler.addCallback(req.id, callback)
+            this.dataHandler.addCallback(req.id, callback)
         }
     }
     sendGroupMessage(groupJid, msg){
@@ -84,8 +85,12 @@ class KikClient extends EventEmitter {
     sendPrivateMessage(userJid, msg){
         this.connection.sendXmlFromJs(sendChatMessage(userJid, msg, false))
     }
-    getJidInfo(jids){
-        this.connection.sendXmlFromJs(jidInfo(jids))
+    getJidInfo(jids, callback){
+        let req = getRoster()
+        this.connection.sendXmlFromJs(jidInfo(jids).xml)
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback)
+        }
     }
     addFriend(jid){
         this.connection.sendXmlFromJs(addFriend(jid))

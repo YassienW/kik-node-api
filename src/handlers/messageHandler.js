@@ -1,4 +1,4 @@
-module.exports = (client, id, data) => {
+module.exports = (client, callbacks, id, data) => {
     let type = data.find("message").attrs.type
 
     if(type === "groupchat"){

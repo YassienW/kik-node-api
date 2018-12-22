@@ -5,6 +5,7 @@ class DataHandler{
     constructor(client){
         this.client = client
 
+        //keeps track of all callbacks via uuid
         this.callbacks = new Map()
     }
     addCallback(id, callback){
@@ -12,20 +13,20 @@ class DataHandler{
     }
     handleData(data){
         //data here is a JSSoup element i can directly consume data from
-        if(data.find("k")){
+        if(data.find("k")) {
             if(data.find("k").attrs.ts){
-                client.emit("authenticated")
-                client.getRoster()
+                this.client.emit("authenticated")
+                this.client.getRoster()
             }else{
-                client.getNode()
+                this.client.getNode()
             }
         }else if(data.find("iq")){
             let id = data.find("iq").attrs.id
-            iqHandler(this.client, id, data)
+            iqHandler(this.client, this.callbacks, id, data)
 
         }else if(data.find("message")){
             let id = data.find("message").attrs.id
-            messageHandler(this.client, id, data)
+            messageHandler(this.client, this.callbacks, id, data)
 
         }else{
             console.log("Unhandled Data")

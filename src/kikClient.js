@@ -79,11 +79,19 @@ class KikClient extends EventEmitter {
             this.dataHandler.addCallback(req.id, callback)
         }
     }
-    sendGroupMessage(groupJid, msg){
-        this.connection.sendXmlFromJs(sendChatMessage(groupJid, msg, true))
+    sendGroupMessage(groupJid, msg, callback){
+        let req = sendChatMessage(groupJid, msg, true)
+        this.connection.sendXmlFromJs(req.xml)
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback)
+        }
     }
-    sendPrivateMessage(userJid, msg){
-        this.connection.sendXmlFromJs(sendChatMessage(userJid, msg, false))
+    sendPrivateMessage(userJid, msg, callback){
+        let req = sendChatMessage(userJid, msg, false)
+        this.connection.sendXmlFromJs(req.xml)
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback)
+        }
     }
     getJidInfo(jids, callback){
         let req = getRoster()

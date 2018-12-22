@@ -35,5 +35,20 @@ module.exports = (client, callbacks, id, data) => {
     }else if(type === "is-typing"){
         let user = client.friends.find((friend) => {return friend.jid === data.find("message").attrs.from})
         client.emit("privateTyping", user, data.find("is-typing").attrs.val === "true")
+    }else if(type === "receipt"){
+        let receipt = data.find("receipt").attrs.type
+
+        data.findAll("msgid").forEach(msgid => {
+            let callback = callbacks.get(msgid.attrs.id)
+            if(callback){
+                //only delete the callback function when you get the read receipt
+                if(receipt === "delivered"){
+                    callback(true, false);
+                }else if(receipt === "read"){
+                    callback(false, true);
+                    callbacks.delete(msgid.attrs.id)
+                }
+            }
+        })
     }
 }

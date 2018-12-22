@@ -1,7 +1,7 @@
 const EventEmitter = require("events"),
     KikConnection = require("./kikConnection"),
+    DataHandler = require("./handlers/dataHandler"),
     logger = require("./logger"),
-    dataHandler = require("./dataHandler")
     initialRequest = require("./requests/initialRequest"),
     getNode = require("./requests/getNode"),
     auth = require("./requests/auth"),
@@ -15,6 +15,7 @@ class KikClient extends EventEmitter {
     constructor(params){
         super()
 
+        this.dataHandler = new DataHandler(this)
         this.params = params
 
         //used for tracking
@@ -26,6 +27,7 @@ class KikClient extends EventEmitter {
             if(this.params.trackGroupInfo){
                 this.groups = groups
                 if(this.params.trackUserInfo){
+                    //perhaps i could combine and send to make it more efficient, depending on the rate limit
                     this.groups.forEach((group) => {
                         this.getJidInfo(group.users)
                     })
@@ -57,7 +59,7 @@ class KikClient extends EventEmitter {
             }
         })
         this.connection.on("data", (data) => {
-            dataHandler(data, this)
+            this.dataHandler.handleData(data)
         })
     }
     //we have to do this before requesting the kik node, but not before auth
@@ -70,17 +72,33 @@ class KikClient extends EventEmitter {
     authRequest(){
         this.connection.sendXmlFromJs(auth(this.params.username, this.params.password, this.params.kikNode), true)
     }
-    getRoster(){
-        this.connection.sendXmlFromJs(getRoster())
+    getRoster(callback){
+        let req = getRoster()
+        this.connection.sendXmlFromJs(req.xml)
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback)
+        }
     }
-    sendGroupMessage(groupJid, msg){
-        this.connection.sendXmlFromJs(sendChatMessage(groupJid, msg, true))
+    sendGroupMessage(groupJid, msg, callback){
+        let req = sendChatMessage(groupJid, msg, true)
+        this.connection.sendXmlFromJs(req.xml)
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback)
+        }
     }
-    sendPrivateMessage(userJid, msg){
-        this.connection.sendXmlFromJs(sendChatMessage(userJid, msg, false))
+    sendPrivateMessage(userJid, msg, callback){
+        let req = sendChatMessage(userJid, msg, false)
+        this.connection.sendXmlFromJs(req.xml)
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback)
+        }
     }
-    getJidInfo(jids){
-        this.connection.sendXmlFromJs(jidInfo(jids))
+    getJidInfo(jids, callback){
+        let req = getRoster()
+        this.connection.sendXmlFromJs(jidInfo(jids).xml)
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback)
+        }
     }
     addFriend(jid){
         this.connection.sendXmlFromJs(addFriend(jid))

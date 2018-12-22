@@ -2,30 +2,32 @@ crypto = require("../cryptoUtils")
 
 //array of jids, or one jid string
 module.exports = (jids) => {
-    let items = []
-    if(Array.isArray(jids)){
-        jids.forEach((jid) => {
-            items.push({
-                "_attributes": {
-                    jid: jid
-                }
-            })
-        })
-    }else{
-        items = [jids]
+    let items = [], id = crypto.generateUUID()
+    if(!Array.isArray(jids)){
+        jids = [jids]
     }
+    jids.forEach((jid) => {
+        items.push({
+            "_attributes": {
+                jid: jid
+            }
+        })
+    })
     return({
-        iq: {
-            _attributes: {
-                type: "get",
-                id: crypto.generateUUID(),
-            },
-            query: {
+        id: id,
+        xml: {
+            iq: {
                 _attributes: {
-                    xmlns: "kik:iq:friend:batch"
+                    type: "get",
+                    id: id
                 },
-                item: items
-            },
+                query: {
+                    _attributes: {
+                        xmlns: "kik:iq:friend:batch"
+                    },
+                    item: items
+                }
+            }
         }
     })
 }

@@ -1,6 +1,7 @@
 const EventEmitter = require("events"),
     KikConnection = require("./kikConnection"),
     DataHandler = require("./handlers/dataHandler"),
+    sessionUtils = require("./sessionUtils"),
     logger = require("./logger"),
     initialRequest = require("./requests/initialRequest"),
     getNode = require("./requests/getNode"),
@@ -51,7 +52,9 @@ class KikClient extends EventEmitter {
             if(err){
                 console.log(err)
             }else{
-                if(this.params.kikNode){
+                //don't read it from file again if it's already set
+                this.session = (this.session? this.session : sessionUtils.getSession(this.params.username))
+                if(this.session.node){
                     this.authRequest()
                 }else{
                     this.initiateNodeConnection()
@@ -62,15 +65,26 @@ class KikClient extends EventEmitter {
             this.dataHandler.handleData(data)
         })
     }
+    //used to set the node and start an authorized session
+    setNode(node){
+        //append the node to the session object
+        this.session = {...this.session, node: node}
+        sessionUtils.setSession(this.params.username, this.session)
+        //we have to disconnect first, then initiate a new connection, with the node set this time
+        this.connection.disconnect()
+        this.connect()
+    }
     //we have to do this before requesting the kik node, but not before auth
     initiateNodeConnection(){
         this.connection.sendXmlFromJs(initialRequest(), true)
     }
     getNode(){
-        this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password))
+        this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password, this.session.deviceID,
+            this.session.androidID))
     }
     authRequest(){
-        this.connection.sendXmlFromJs(auth(this.params.username, this.params.password, this.params.kikNode), true)
+        this.connection.sendXmlFromJs(auth(this.params.username, this.params.password, this.session.node,
+            this.session.deviceID), true)
     }
     getRoster(callback){
         let req = getRoster()

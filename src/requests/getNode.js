@@ -1,7 +1,7 @@
 const config = require("../config"),
     crypto = require("../cryptoUtils")
 
-module.exports = (username, password) => {
+module.exports = (username, password, deviceID, androidID) => {
     //captcha = captcha_element.format(self.captcha_result) if self.captcha_result else ''
     return({
         iq: {
@@ -20,7 +20,7 @@ module.exports = (username, password) => {
                     _text: crypto.generatePasskey(username, password)
                 },
                 "device-id": {
-                    _text: config.deviceID
+                    _text: deviceID
                 },
                 "install-referrer": {
                     _text: "utm_source=google-play&utm_medium=organic"
@@ -56,7 +56,7 @@ module.exports = (username, password) => {
                     _text: "CAN"
                 },
                 "android-id": {
-                    _text: config.androidID
+                    _text: androidID
                 },
                 model: {
                     _text: "Samsung Galaxy S5 - 4.4.4 - API 19 - 1080x1920"

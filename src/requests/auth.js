@@ -1,7 +1,7 @@
 const config = require("../config"),
     crypto = require("../cryptoUtils")
 
-module.exports = (username, password, node) => {
+module.exports = (username, password, node, deviceID) => {
     let timestamp = "1496333389122"
     let sid = crypto.generateUUID()
     let jid = `${node}@talk.kik.com`
@@ -16,7 +16,7 @@ module.exports = (username, password, node) => {
                 v: config.kikVersionInfo.version,
                 lang: "en_US",
                 ts: timestamp,
-                from: `${jid}/CAN${config.deviceID}`,
+                from: `${jid}/CAN${deviceID}`,
                 p: crypto.generatePasskey(username, password),
                 cv: crypto.generateCV(config.kikVersionInfo, timestamp, jid)
             })

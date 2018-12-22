@@ -2,11 +2,7 @@ module.exports = (client, callbacks, id, data) => {
     let xmlns = data.find("query").attrs.xmlns
 
     if(xmlns === "jabber:iq:register"){
-        client.params.kikNode = data.find("node").text
-        //we have to disconnect first, then initiate a new connection, with the node set this time
-        client.connection.disconnect()
-        client.connect()
-
+        client.setNode(data.find("node").text)
     }else if(xmlns === "jabber:iq:roster"){
         let groups = [], friends = []
         //fill up friends

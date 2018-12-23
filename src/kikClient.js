@@ -46,6 +46,18 @@ class KikClient extends EventEmitter {
         this.on("userleftgroup", (user) => {
             this.users.splice(user, 1)
         })
+        this.on("receivedcaptcha", (captchaUrl) => {
+            if(this.params.promptCaptchas){
+                let stdin = process.stdin, stdout = process.stdout
+
+                console.log("Please resolve captcha by going to: " + captchaUrl)
+                stdout.write("Captcha response: ")
+
+                stdin.once("data", (data) => {
+                    this.resolveCaptcha(data.toString().trim())
+                });
+            }
+        })
     }
     connect(){
         this.connection = new KikConnection(err => {
@@ -81,6 +93,10 @@ class KikClient extends EventEmitter {
     getNode(){
         this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password, this.session.deviceID,
             this.session.androidID))
+    }
+    resolveCaptcha(response){
+        this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password, this.session.deviceID,
+            this.session.androidID, response))
     }
     authRequest(){
         this.connection.sendXmlFromJs(auth(this.params.username, this.params.password, this.session.node,

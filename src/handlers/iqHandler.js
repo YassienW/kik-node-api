@@ -2,7 +2,11 @@ module.exports = (client, callbacks, id, data) => {
     let xmlns = data.find("query").attrs.xmlns
 
     if(xmlns === "jabber:iq:register"){
-        client.setNode(data.find("node").text)
+        if(data.find("node")){
+            client.setNode(data.find("node").text)
+        }else{
+            client.emit("receivedcaptcha", data.find("captcha-url").text)
+        }
     }else if(xmlns === "jabber:iq:roster"){
         let groups = [], friends = []
         //fill up friends

@@ -1,8 +1,8 @@
 const EventEmitter = require("events"),
     KikConnection = require("./kikConnection"),
     DataHandler = require("./handlers/dataHandler"),
+    Logger = require("./logger"),
     sessionUtils = require("./sessionUtils"),
-    logger = require("./logger"),
     initialRequest = require("./requests/initialRequest"),
     getNode = require("./requests/getNode"),
     auth = require("./requests/auth"),
@@ -16,8 +16,9 @@ class KikClient extends EventEmitter {
     constructor(params){
         super()
 
-        this.dataHandler = new DataHandler(this)
         this.params = params
+        this.dataHandler = new DataHandler(this)
+        this.logger = new Logger(["info"], this.params.username)
 
         //used for tracking
         this.groups = []
@@ -60,9 +61,9 @@ class KikClient extends EventEmitter {
         })
     }
     connect(){
-        this.connection = new KikConnection(err => {
+        this.connection = new KikConnection(this.logger, err => {
             if(err){
-                console.log(err)
+                this.logger.log("error", err)
             }else{
                 //don't read it from file again if it's already set
                 this.session = (this.session? this.session : sessionUtils.getSession(this.params.username))
@@ -124,6 +125,7 @@ class KikClient extends EventEmitter {
         }
     }
     getJidInfo(jids, callback){
+        this.logger.log("info", "Requesting JID info for " + jids)
         let req = getJidInfo(jids)
         this.connection.sendXmlFromJs(req.xml)
         if(callback){

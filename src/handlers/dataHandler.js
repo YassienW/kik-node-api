@@ -28,8 +28,11 @@ class DataHandler{
             let id = data.find("message").attrs.id
             messageHandler(this.client, this.callbacks, id, data)
 
+        }else if(data.find("ack")){
+            //do nothing for now
         }else{
-            console.log("Unhandled Data")
+            this.client.logger.log("info", "Received Unhandled Data")
+
         }
     }
 }

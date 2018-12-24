@@ -8,7 +8,7 @@ const EventEmitter = require("events"),
     auth = require("./requests/auth"),
     getRoster = require("./requests/getRoster"),
     sendChatMessage = require("./requests/sendChatMessage"),
-    jidInfo = require("./requests/getJidInfo"),
+    getJidInfo = require("./requests/getJidInfo"),
     removeFriend = require("./requests/removeFriend"),
     addFriend = require("./requests/addFriend")
 
@@ -124,8 +124,8 @@ class KikClient extends EventEmitter {
         }
     }
     getJidInfo(jids, callback){
-        let req = getRoster()
-        this.connection.sendXmlFromJs(jidInfo(jids).xml)
+        let req = getJidInfo(jids)
+        this.connection.sendXmlFromJs(req.xml)
         if(callback){
             this.dataHandler.addCallback(req.id, callback)
         }

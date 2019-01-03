@@ -31,10 +31,12 @@ module.exports = (client, callbacks, id, data) => {
         }else{
             let jid = data.find("message").attrs.from
 
+            let user = {jid: jid, username: null, displayName: null}
             if(client.params.trackFriendInfo /*|| client.params.trackUserInfo*/){
                 //try to find the user data in friends first
-                let user = client.friends.find(friend => {return friend.jid === jid})
-                client.emit("receivedprivatemsg", user, data.find("body").text)
+                let userSearch = client.friends.find(friend => {return friend.jid === jid})
+
+                user = (userSearch? userSearch : user)
 
 /*                if(!user){
                     //try to find the user data in users
@@ -51,14 +53,12 @@ module.exports = (client, callbacks, id, data) => {
                 }else{
                     client.emit("receivedprivatemsg", user, data.find("body").text)
                 }*/
-            }else{
-                let userObj = {jid: jid, username: null, displayName: null}
-                client.emit("receivedprivatemsg", userObj, data.find("body").text)
             }
+            client.emit("receivedprivatemsg", user, data.find("body").text)
         }
     }else if(type === "is-typing"){
         let user = client.friends.find((friend) => {return friend.jid === data.find("message").attrs.from})
-        client.emit("privateTyping", user, data.find("is-typing").attrs.val === "true")
+        client.emit("privatetyping", user, data.find("is-typing").attrs.val === "true")
     }else if(type === "receipt"){
         let receipt = data.find("receipt").attrs.type
 

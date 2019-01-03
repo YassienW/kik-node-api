@@ -18,7 +18,7 @@ class KikClient extends EventEmitter {
 
         this.params = params
         this.dataHandler = new DataHandler(this)
-        this.logger = new Logger(["info, warning, error"], this.params.username)
+        this.logger = new Logger(["info", "warning", "error"], this.params.username)
 
         //used for tracking
         this.groups = []

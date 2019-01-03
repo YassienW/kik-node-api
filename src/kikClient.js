@@ -1,14 +1,14 @@
 const EventEmitter = require("events"),
     KikConnection = require("./kikConnection"),
     DataHandler = require("./handlers/dataHandler"),
+    Logger = require("./logger"),
     sessionUtils = require("./sessionUtils"),
-    logger = require("./logger"),
     initialRequest = require("./requests/initialRequest"),
     getNode = require("./requests/getNode"),
     auth = require("./requests/auth"),
     getRoster = require("./requests/getRoster"),
     sendChatMessage = require("./requests/sendChatMessage"),
-    jidInfo = require("./requests/getJidInfo"),
+    getJidInfo = require("./requests/getJidInfo"),
     removeFriend = require("./requests/removeFriend"),
     addFriend = require("./requests/addFriend")
 
@@ -16,8 +16,9 @@ class KikClient extends EventEmitter {
     constructor(params){
         super()
 
-        this.dataHandler = new DataHandler(this)
         this.params = params
+        this.dataHandler = new DataHandler(this)
+        this.logger = new Logger(["info", "warning", "error"], this.params.username)
 
         //used for tracking
         this.groups = []
@@ -46,11 +47,23 @@ class KikClient extends EventEmitter {
         this.on("userleftgroup", (user) => {
             this.users.splice(user, 1)
         })
+        this.on("receivedcaptcha", (captchaUrl) => {
+            if(this.params.promptCaptchas){
+                let stdin = process.stdin, stdout = process.stdout
+
+                console.log("Please resolve captcha by going to: " + captchaUrl)
+                stdout.write("Captcha response: ")
+
+                stdin.once("data", (data) => {
+                    this.resolveCaptcha(data.toString().trim())
+                });
+            }
+        })
     }
     connect(){
-        this.connection = new KikConnection(err => {
+        this.connection = new KikConnection(this.logger, err => {
             if(err){
-                console.log(err)
+                this.logger.log("error", err)
             }else{
                 //don't read it from file again if it's already set
                 this.session = (this.session? this.session : sessionUtils.getSession(this.params.username))
@@ -76,17 +89,26 @@ class KikClient extends EventEmitter {
     }
     //we have to do this before requesting the kik node, but not before auth
     initiateNodeConnection(){
+        this.logger.log("info", "Initiating kik node connection")
         this.connection.sendXmlFromJs(initialRequest(), true)
     }
     getNode(){
+        this.logger.log("info", "Requesting kik node")
         this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password, this.session.deviceID,
             this.session.androidID))
     }
+    resolveCaptcha(response){
+        this.logger.log("info", `Resolving captcha with response ${response}`)
+        this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password, this.session.deviceID,
+            this.session.androidID, response))
+    }
     authRequest(){
+        this.logger.log("info", "Sending auth request")
         this.connection.sendXmlFromJs(auth(this.params.username, this.params.password, this.session.node,
             this.session.deviceID), true)
     }
     getRoster(callback){
+        this.logger.log("info", "Getting roster")
         let req = getRoster()
         this.connection.sendXmlFromJs(req.xml)
         if(callback){
@@ -94,6 +116,7 @@ class KikClient extends EventEmitter {
         }
     }
     sendGroupMessage(groupJid, msg, callback){
+        this.logger.log("info", `Sending group message to ${groupJid} Content: ${msg}`)
         let req = sendChatMessage(groupJid, msg, true)
         this.connection.sendXmlFromJs(req.xml)
         if(callback){
@@ -101,6 +124,7 @@ class KikClient extends EventEmitter {
         }
     }
     sendPrivateMessage(userJid, msg, callback){
+        this.logger.log("info", `Sending private message to ${userJid} Content: ${msg}`)
         let req = sendChatMessage(userJid, msg, false)
         this.connection.sendXmlFromJs(req.xml)
         if(callback){
@@ -108,16 +132,19 @@ class KikClient extends EventEmitter {
         }
     }
     getJidInfo(jids, callback){
-        let req = getRoster()
-        this.connection.sendXmlFromJs(jidInfo(jids).xml)
+        this.logger.log("info", `Requesting JID info for ${jids}`)
+        let req = getJidInfo(jids)
+        this.connection.sendXmlFromJs(req.xml)
         if(callback){
             this.dataHandler.addCallback(req.id, callback)
         }
     }
     addFriend(jid){
+        this.logger.log("info", `Adding friend with JID ${jid}`)
         this.connection.sendXmlFromJs(addFriend(jid))
     }
     removeFriend(jid){
+        this.logger.log("info", `Removing friend with JID ${jid}`)
         this.connection.sendXmlFromJs(removeFriend(jid))
     }
 }

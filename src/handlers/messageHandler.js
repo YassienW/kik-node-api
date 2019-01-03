@@ -29,19 +29,44 @@ module.exports = (client, callbacks, id, data) => {
         if(data.find("xiphias-mobileremote-call")){
             //safetynet message
         }else{
-            let user = client.friends.find((friend) => {return friend.jid === data.find("message").attrs.from})
+            let jid = data.find("message").attrs.from
+
+            let user = {jid: jid, username: null, displayName: null}
+            if(client.params.trackFriendInfo /*|| client.params.trackUserInfo*/){
+                //try to find the user data in friends first
+                let userSearch = client.friends.find(friend => {return friend.jid === jid})
+
+                user = (userSearch? userSearch : user)
+
+/*                if(!user){
+                    //try to find the user data in users
+                    user = client.users.find(user => {return user.jid === jid})
+                    //if we don't find the user in users, and user tracking is on, get his jid info (this automatically
+                    //adds him//to users), otherwise we return what we found
+                    if(!user && client.params.trackUserInfo){
+                        client.getJidInfo(data.find("message").attrs.from, (users) => {
+                            client.emit("receivedprivatemsg", users[0], data.find("body").text)
+                        })
+                    }else{
+                        client.emit("receivedprivatemsg", user, data.find("body").text)
+                    }
+                }else{
+                    client.emit("receivedprivatemsg", user, data.find("body").text)
+                }*/
+            }
             client.emit("receivedprivatemsg", user, data.find("body").text)
         }
     }else if(type === "is-typing"){
         let user = client.friends.find((friend) => {return friend.jid === data.find("message").attrs.from})
-        client.emit("privateTyping", user, data.find("is-typing").attrs.val === "true")
+        client.emit("privatetyping", user, data.find("is-typing").attrs.val === "true")
     }else if(type === "receipt"){
         let receipt = data.find("receipt").attrs.type
 
         data.findAll("msgid").forEach(msgid => {
             let callback = callbacks.get(msgid.attrs.id)
             if(callback){
-                //only delete the callback function when you get the read receipt
+                //only delete the callback function when you get the read receipt, this WILL cause a leak if a client
+                //doesn't return read receipts for any reason
                 if(receipt === "delivered"){
                     callback(true, false);
                 }else if(receipt === "read"){

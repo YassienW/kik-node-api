@@ -1,8 +1,7 @@
 const config = require("../config"),
     crypto = require("../cryptoUtils")
 
-module.exports = (username, password, deviceID, androidID) => {
-    //captcha = captcha_element.format(self.captcha_result) if self.captcha_result else ''
+module.exports = (username, password, deviceID, androidID, captchaResponse) => {
     return({
         iq: {
             _attributes: {
@@ -60,6 +59,11 @@ module.exports = (username, password, deviceID, androidID) => {
                 },
                 model: {
                     _text: "Samsung Galaxy S5 - 4.4.4 - API 19 - 1080x1920"
+                },
+                challenge: {
+                    response: {
+                        _text: captchaResponse
+                    }
                 }
             }
         }

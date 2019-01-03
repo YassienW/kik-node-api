@@ -65,7 +65,8 @@ module.exports = (client, callbacks, id, data) => {
         data.findAll("msgid").forEach(msgid => {
             let callback = callbacks.get(msgid.attrs.id)
             if(callback){
-                //only delete the callback function when you get the read receipt
+                //only delete the callback function when you get the read receipt, this WILL cause a leak if a client
+                //doesn't return read receipts for any reason
                 if(receipt === "delivered"){
                     callback(true, false);
                 }else if(receipt === "read"){

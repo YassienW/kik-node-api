@@ -18,6 +18,7 @@ class KikConnection extends EventEmitter{
             callback()
         })
         this.socket.on("end", () => {
+            this.logger.log("warning", "Kik server disconnected")
             callback("Server ended")
         })
         this.socket.on("error", err => {

@@ -10,7 +10,10 @@ const EventEmitter = require("events"),
     sendChatMessage = require("./requests/sendChatMessage"),
     getJidInfo = require("./requests/getJidInfo"),
     removeFriend = require("./requests/removeFriend"),
-    addFriend = require("./requests/addFriend")
+    addFriend = require("./requests/addFriend"),
+    setAdmin = require("./requests/setAdmin"),
+    setBanned = require("./requests/setBanned"),
+    setGroupMember = require("./requests/setGroupMember")
 
 class KikClient extends EventEmitter {
     constructor(params){
@@ -146,6 +149,18 @@ class KikClient extends EventEmitter {
     removeFriend(jid){
         this.logger.log("info", `Removing friend with JID ${jid}`)
         this.connection.sendXmlFromJs(removeFriend(jid))
+    }
+    setAdmin(groupJid, userJid, bool){
+        this.logger.log("info", `Setting admin = ${bool} for jid ${userJid} in group ${groupJid}`)
+        this.connection.sendXmlFromJs(setAdmin(groupJid, userJid, bool))
+    }
+    setBanned(groupJid, userJid, bool){
+        this.logger.log("info", `Setting banned = ${bool} for jid ${userJid} in group ${groupJid}`)
+        this.connection.sendXmlFromJs(setBanned(groupJid, userJid, bool))
+    }
+    setGroupMember(groupJid, userJid, bool){
+        this.logger.log("info", `Setting member = ${bool} for jid ${userJid} in group ${groupJid}`)
+        this.connection.sendXmlFromJs(setGroupMember(groupJid, userJid, bool))
     }
 }
 module.exports = KikClient

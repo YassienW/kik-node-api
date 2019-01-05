@@ -3,8 +3,7 @@ const KikClient = require("./src/kikClient")
 Kik = new KikClient({
     username: "username",
     password: "1234",
-    kikNode: null,
-    trackGroupInfo: true,
+    promptCaptchas: true,
     trackUserInfo: true,
     trackFriendInfo: true
 })
@@ -18,25 +17,21 @@ Kik.on("authenticated", () => {
 })
 //alternatively you can use this event for roster
 Kik.on("receivedroster", (groups, friends) => {
-    //do stuff here
+    console.log(groups)
+    console.log(friends)
+})
+//alternatively you can use this event for captcha
+Kik.on("receivedcaptcha", (captchaUrl) => {
+    console.log("Please solve captcha" + captchaUrl)
 })
 Kik.on("receivedjidinfo", (users) => {
-    console.log("We got peer info")
+    console.log("We got peer info:")
+    console.log(users)
 })
-//group events
+
+/*GROUP EVENTS*/
 Kik.on("receivedgroupmsg", (group, sender, msg) => {
-    Kik.getJidInfo(sender.jid, (users) => {
-        console.log("Received JID info")
-        console.log(users)
-    })
     console.log(`GROUP:${group.code}: [${sender.displayName}]: ${msg}`)
-    Kik.sendGroupMessage(group.jid, msg, (delivered, read) => {
-        if(delivered){
-            console.log("groupdelivered" + delivered)
-        }else if(read){
-            console.log("groupread" + read)
-        }
-    })
 })
 Kik.on("grouptyping", (group, sender, isTyping) => {
     if(isTyping){
@@ -49,18 +44,26 @@ Kik.on("userleftgroup", (group, user, kickedBy) => {
     console.log(`GROUP:${group.code}: ${user.displayName} left the group`)
 })
 Kik.on("userjoinedgroup", (group, user, invitedBy) => {
-    console.log(`GROUP:${group.code}: ${user} joined the group`)
+    console.log(`GROUP:${group.code}: ${user.displayName} joined the group`)
 })
-//private messaging events
+
+/*PRIVATE EVENTS*/
 Kik.on("receivedprivatemsg", (sender, msg) => {
     Kik.sendPrivateMessage(sender.jid, msg, (delivered, read) => {
         if(delivered){
-            console.log("pmdelivered" + delivered)
+            console.log(`PRIVATE: ${sender.jid} PM read`)
         }else if(read){
-            console.log("pmread" + read)
+            console.log(`PRIVATE: ${sender.jid} PM delivered`)
         }
     })
     console.log(`PRIVATE: [${sender.displayName}]: ${msg}`)
+})
+Kik.on("privatetyping", (sender, isTyping) => {
+    if(isTyping){
+        console.log(`PRIVATE: ${sender.jid} is typing`)
+    }else{
+        console.log(`PRIVATE: ${sender.jid} stopped typing`)
+    }
 })
 
 Kik.connect()

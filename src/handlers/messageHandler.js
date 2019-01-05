@@ -25,7 +25,7 @@ module.exports = (client, callbacks, id, data) => {
                 client.emit("userjoinedgroup", group, data.find("status").attrs.jid, null)
             }
         }else if(data.find("images")){
-            client.emit("receivedgroupimg", group, user, client.imgManager.downloadImg(data.find("file-url").text))
+            client.emit("receivedgroupimg", group, user, client.imgManager.getImg(data.find("file-url").text, false))
         }
     }else if(type === "chat" || type === "is-typing"){
         let jid = data.find("message").attrs.from
@@ -60,7 +60,7 @@ module.exports = (client, callbacks, id, data) => {
         }else if(type === "is-typing"){
             client.emit("privatetyping", user, data.find("is-typing").attrs.val === "true")
         }else if(data.find("images")){
-            client.emit("receivedprivateimg", user, client.imgManager.downloadImg(data.find("file-url").text))
+            client.emit("receivedprivateimg", user, client.imgManager.getImg(data.find("file-url").text, true))
         }
     }else if(type === "receipt"){
         let receipt = data.find("receipt").attrs.type

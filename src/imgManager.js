@@ -6,11 +6,15 @@ class ImageManager {
         this.username = username
         this.saveImages = saveImages
 
-        if(!fs.existsSync(`./images/${this.username}`)){
-            fs.mkdirSync(`./images/${this.username}`)
+        if(!fs.existsSync(`./images/${this.username}/groups`)){
+            fs.mkdirSync(`./images/${this.username}/groups`)
+        }
+        if(!fs.existsSync(`./images/${this.username}/private`)){
+            fs.mkdirSync(`./images/${this.username}/private`)
         }
     }
-    downloadImg(url){
+    //2nd param is used for determining which folder to save in
+    getImg(url, isPrivate){
         //first request returns a 302 with a url
         https.get(url, (res) => {
             //second req returns the actual image
@@ -25,7 +29,11 @@ class ImageManager {
                     let date = new Date().toISOString().substring(0, 10)
 
                     if(this.saveImages){
-                        fs.writeFileSync(`./images/${this.username}/${date}_${Date.now()}.jpeg`, buffer)
+                        if(isPrivate){
+                            fs.writeFileSync(`./images/${this.username}/private/${date}_${Date.now()}.jpeg`, buffer)
+                        }else{
+                            fs.writeFileSync(`./images/${this.username}/groups/${date}_${Date.now()}.jpeg`, buffer)
+                        }
                     }
                     return buffer
                 });

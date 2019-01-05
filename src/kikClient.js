@@ -31,14 +31,12 @@ class KikClient extends EventEmitter {
         this.users = []
 
         this.on("receivedroster", (groups, friends) => {
-            if(this.params.trackGroupInfo){
-                this.groups = groups
-                if(this.params.trackUserInfo){
-                    //perhaps i could combine and send to make it more efficient, depending on the rate limit
-                    this.groups.forEach((group) => {
-                        this.getJidInfo(group.users)
-                    })
-                }
+            this.groups = groups
+            if(this.params.trackUserInfo){
+                //perhaps i could combine and send to make it more efficient, depending on the rate limit
+                this.groups.forEach((group) => {
+                    this.getJidInfo(group.users)
+                })
             }
             if(this.params.trackFriendInfo){
                 this.friends = friends

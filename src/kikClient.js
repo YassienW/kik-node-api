@@ -2,6 +2,7 @@ const EventEmitter = require("events"),
     KikConnection = require("./kikConnection"),
     DataHandler = require("./handlers/dataHandler"),
     Logger = require("./logger"),
+    ImageManager = require("./imgManager")
     sessionUtils = require("./sessionUtils"),
     initialRequest = require("./requests/initialRequest"),
     getNode = require("./requests/getNode"),
@@ -22,6 +23,7 @@ class KikClient extends EventEmitter {
         this.params = params
         this.dataHandler = new DataHandler(this)
         this.logger = new Logger(["info", "warning", "error"], this.params.username)
+        this.imgManager = new ImageManager(this.params.username, true)
 
         //used for tracking
         this.groups = []

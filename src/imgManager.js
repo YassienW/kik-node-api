@@ -6,6 +6,12 @@ class ImageManager {
         this.username = username
         this.saveImages = saveImages
 
+        if(!fs.existsSync(`./images`)){
+            fs.mkdirSync(`./images`)
+        }
+        if(!fs.existsSync(`./images/${this.username}`)){
+            fs.mkdirSync(`./images/${this.username}`)
+        }
         if(!fs.existsSync(`./images/${this.username}/groups`)){
             fs.mkdirSync(`./images/${this.username}/groups`)
         }

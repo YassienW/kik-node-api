@@ -3,7 +3,22 @@ module.exports = (client, callbacks, id, data) => {
 
     if(type === "groupchat"){
         let group = client.groups.find((group) => {return group.jid === data.find("g").attrs.jid})
-        let user = client.users.find((user) => {return user.jid === data.find("message").attrs.from})
+        let user = {
+            jid: data.find("message").attrs.from,
+            username: null,
+            displayName: null,
+            pic: null
+        }
+
+        //status message froms contain the group JID not the user JID, ignore them
+        if(client.params.trackUserInfo && !data.find("status")){
+            let userSearch = client.users.find((user) => {return user.jid === data.find("message").attrs.from})
+            user = (userSearch? userSearch : user)
+        }
+        if(client.params.trackFriendInfo && !data.find("status")){
+            let userSearch = client.friends.find((user) => {return user.jid === data.find("message").attrs.from})
+            user = (userSearch? userSearch : user)
+        }
 
         if(data.find("body")){
             client.emit("receivedgroupmsg", group, user, data.find("body").text)
@@ -13,23 +28,22 @@ module.exports = (client, callbacks, id, data) => {
             client.emit("receivedgroupimg", group, user, client.imgManager.getImg(data.find("file-url").text, false))
         }else if(data.find("status")){
             let status = data.find("status")
+            //user's jid is in the status here, if it wasn't set, set it
+            user = (user.jid? user : {...user, jid: status.attrs.jid})
 
             if(status.text.includes("left") || status.text.includes("removed")){
                 let kickedBy = (status.text.includes("removed")? status.text.split("has")[0].trim() : null)
 
-                if(client.params.trackUserInfo){
-                    //try to find the user data in friends first
-                    let userSearch = client.friends.find(friend => {return friend.jid === status.attrs.jid})
-                    user = (userSearch? userSearch : user)
-                }
                 client.emit("userleftgroup", group, user, kickedBy)
             }else if(status.text.includes("joined")){
+                let invitedBy = (status.text.includes("invited")? status.text.split("by")[1].trim() : null)
+
                 if(client.params.trackUserInfo){
-                    client.getJidInfo(data.find("status").attrs.jid,(users) => {
-                        client.emit("userjoinedgroup", group, users[0], null)
+                    client.getJidInfo(status.attrs.jid,(users) => {
+                        client.emit("userjoinedgroup", group, users[0], invitedBy)
                     })
                 }else{
-                    client.emit("userjoinedgroup", group, user, null)
+                    client.emit("userjoinedgroup", group, user, invitedBy)
                 }
             }
         }

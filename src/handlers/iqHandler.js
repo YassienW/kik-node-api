@@ -4,8 +4,10 @@ module.exports = (client, callbacks, id, data) => {
     if(xmlns === "jabber:iq:register"){
         if(data.find("node")){
             client.setNode(data.find("node").text)
-        }else{
+        }else if(data.find("captcha-url")){
             client.emit("receivedcaptcha", data.find("captcha-url").text)
+        }else{
+            //handle others
         }
     }else if(xmlns === "jabber:iq:roster"){
         let groups = [], friends = []

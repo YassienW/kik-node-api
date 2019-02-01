@@ -11,10 +11,12 @@ class Logger {
         }
     }
     log(type, msg){
+        let date = new Date()
+        let logTxt = `[${date.getHours()}:${date.getMinutes()}] ${type.toUpperCase()}: ${msg}`
         if(this.types.includes(type)){
-            console.log(`${type.toUpperCase()}: ${msg}`)
+            console.log(logTxt)
         }
-        fs.appendFileSync(`./logs/${this.username}.txt`, `${type.toUpperCase()}: ${msg}\n`)
+        fs.appendFileSync(`./logs/${this.username}.txt`, `${logTxt}\n`)
     }
 }
 module.exports = Logger

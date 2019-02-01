@@ -1,7 +1,15 @@
 {
   "name": "kik-node-api",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "An API for creating kik bots (and other stuff)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YassienW/kik-node-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YassienW/kik-node-api/issues"
+  },
+  "homepage": "https://github.com/YassienW/kik-node-api#readme",
   "main": "src/kikClient.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,5 +24,6 @@
     "jssoup": "0.0.10",
     "uuid": "^3.3.2",
     "xml-js": "^1.6.8"
-  }
+  },
+  "devDependencies": {}
 }

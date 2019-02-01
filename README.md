@@ -4,15 +4,11 @@ A chatting API for kik built with Node.js, based on <https://github.com/tomer800
 
 ## Installation
 
-For now you will need to simply download the repository, NPM installation coming soon
-
-<!--
-Use NPM to install foobar:
+NPM:
 
 ```bash
-npm install kik-node-api
+npm i kik-node-api
 ```
--->
 
 ## Usage
 
@@ -48,7 +44,7 @@ You can use the API by creating an instance of `KikClient`, you'll use it to lis
 to events and send requests to kik
 
 ```javascript
-const KikClient = require("./src/kikClient")
+const KikClient = require("kik-node-api")
 
 Kik = new KikClient({
     username: "username",

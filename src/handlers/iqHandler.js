@@ -27,7 +27,7 @@ module.exports = (client, callbacks, id, data) => {
             })
             groups.push({
                 jid: group.attrs.jid,
-                code: group.find("code").text,
+                code: group.find("code")? group.find("code").text : null,
                 name: group.find("n").text,
                 users: users
             })

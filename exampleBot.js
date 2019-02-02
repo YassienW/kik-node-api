@@ -42,9 +42,13 @@ Kik.on("grouptyping", (group, sender, isTyping) => {
 })
 Kik.on("userleftgroup", (group, user, kickedBy) => {
     console.log(`GROUP:${group.code}: ${user.displayName} left the group`)
+    //ban anyone once they leave
+    Kik.setBanned(group.jid, user.jid, true)
 })
 Kik.on("userjoinedgroup", (group, user, invitedBy) => {
     console.log(`GROUP:${group.code}: ${user.displayName} joined the group`)
+    //kicking anyone once they join
+    Kik.setGroupMember(group.jid, user.jid, false)
 })
 
 /*PRIVATE EVENTS*/

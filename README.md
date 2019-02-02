@@ -2,6 +2,8 @@
 
 A chatting API for kik built with Node.js, based on <https://github.com/tomer8007/kik-bot-api-unofficial>
 
+**THIS IS NOT AN OFFICIAL API**
+
 ## Installation
 
 NPM:
@@ -23,17 +25,22 @@ npm i kik-node-api
     * [Received JID Info](#received-jid-info)
 2. [Group Events](#group-events)
     * [Received Group Message](#received-group-message)
+    * [Received Group Image](#received-group-image)
     * [Group Is Typing](#group-is-typing)
     * [User Left Group](#user-left-group)
     * [User Joined Group](#user-joined-group)
 3. [Private Events](#private-events)
     * [Received Private Message](#received-private-message)
+    * [Received Private Image](#received-private-image)
     * [Private Is Typing](#private-is-typing)
 
 ##### Requests
 
 1. [Group Requests](#group-requests)
     * [Send Group Message](#send-group-message)
+    * [Kick/Add](#kick/add)
+    * [Promote/Demote](#promote/demote)
+    * [Ban/Unban](#ban/unban)
 2. [Private Requests](#private-requests)
     * [Send Private Message](#send-private-message)
 ---
@@ -84,6 +91,7 @@ group: {
     users: ["jid1", "jid2", "jid3"]
 }
 ```
+private groups have a code of null
 
 ### Events
 #### The Basics
@@ -151,6 +159,20 @@ Kik.on("receivedgroupmsg", (group, sender, msg) => {
 
 `msg`: the received message
 
+##### Received Group Image
+
+```javascript
+Kik.on("receivedgroupimg", (group, sender, img) => {
+    console.log(`Received image from ${sender.jid} in group ${group.jid}`)
+})
+```
+`group`: a [`group`](#getting-started) object representing the group where the message was sent
+
+`sender`: a [`user`](#getting-started) object representing the message sender
+
+`img`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the image
+
+
 ##### Group is Typing
 
 ```javascript
@@ -206,6 +228,17 @@ Kik.on("receivedprivatemsg", (sender, msg) => {
 
 `msg`: the received message
 
+##### Received Private Image
+
+```javascript
+Kik.on("receivedprivateimg", (sender, img) => {
+    console.log(`Received image from ${sender.jid}`)
+})
+```
+`sender`: a [`user`](#getting-started) object representing the message sender
+
+`img`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the image
+
 ##### Private Is Typing
 
 ```javascript
@@ -238,6 +271,24 @@ Kik.sendGroupMessage(groupJid, msg, (delivered, read) => {
 })
 ```
 
+##### Kick/Add
+
+```javascript
+Kik.setGroupMember(groupJid, userJid, bool)
+```
+
+##### Promote/Demote
+
+```javascript
+Kik.setAdmin(groupJid, userJid, bool)
+```
+
+##### Ban/Unban
+
+```javascript
+Kik.setBanned(groupJid, userJid, bool)
+```
+
 #### Private Requests
 ##### Send Private Message
 ```javascript
@@ -249,11 +300,5 @@ Kik.sendPrivateMessage(userJid, msg, (delivered, read) => {
     }
 })
 ```
-
-<!--
-## Contributing
-
-
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)
--->
+[GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)

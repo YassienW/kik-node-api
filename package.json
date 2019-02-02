@@ -1,6 +1,6 @@
 {
   "name": "kik-node-api",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "An API for creating kik bots (and other stuff)",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Yassien",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "dependencies": {
     "big-integer": "^1.6.40",
     "binascii": "0.0.2",

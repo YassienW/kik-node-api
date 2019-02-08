@@ -8,6 +8,7 @@ module.exports = (jid, msg, isGroup) => {
         xml: {
             message: {
                 _attributes: {
+                    xmlns: "jabber:client",
                     type: type,
                     to: jid,
                     id: id,
@@ -28,7 +29,7 @@ module.exports = (jid, msg, isGroup) => {
                 },
                 request: {
                     _attributes: {
-                        xmlns: "kik:message:receipt",
+                        //xmlns: "kik:message:receipt",
                         r: "true",
                         d: "true"
                     }

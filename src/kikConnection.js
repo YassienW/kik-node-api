@@ -24,8 +24,20 @@ class KikConnection extends EventEmitter{
             callback(err)
         })
         this.socket.on("data", data => {
-            this.logger.log("raw", `Received data: ${data}`)
-            this.emit("data", new JSSoup(data))
+            //apparently this is the max length we can receive in one packet, we have to combine it with the next packet
+            //before passing it to the client, to make sure it is a full message, note this ONLY works if the packet
+            //is split to 2, 3 would break
+            if(data.length >= 16384){
+                this.prevPacket = data
+            }else{
+                let fullPacket = data
+                if(this.prevPacket){
+                    fullPacket = this.prevPacket + fullPacket
+                    this.prevPacket = null
+                }
+                this.emit("data", new JSSoup(fullPacket))
+                this.logger.log("raw", `Received data (${fullPacket.length}): ${fullPacket}`)
+            }
         })
     }
     disconnect(){

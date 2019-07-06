@@ -1,6 +1,6 @@
 {
   "name": "kik-node-api",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "An API for creating kik bots (and other stuff)",
   "repository": {
     "type": "git",

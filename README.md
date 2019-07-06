@@ -4,6 +4,9 @@ A chatting API for kik built with Node.js, based on <https://github.com/tomer800
 
 **THIS IS NOT AN OFFICIAL API**
 
+![npm](https://img.shields.io/npm/v/kik-node-api.svg?style=plastic)
+![npm](https://img.shields.io/npm/dt/kik-node-api.svg?style=plastic)
+
 ## Installation
 
 NPM:

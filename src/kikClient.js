@@ -120,17 +120,10 @@ class KikClient extends EventEmitter {
             this.dataHandler.addCallback(req.id, callback);
         }
     }
-    sendGroupMessage(groupJid, msg, callback){
-        this.logger.log("info", `Sending group message to ${groupJid} Content: ${msg}`);
-        let req = sendChatMessage(groupJid, msg, true);
-        this.connection.sendXmlFromJs(req.xml);
-        if(callback){
-            this.dataHandler.addCallback(req.id, callback);
-        }
-    }
-    sendPrivateMessage(userJid, msg, callback){
-        this.logger.log("info", `Sending private message to ${userJid} Content: ${msg}`);
-        let req = sendChatMessage(userJid, msg, false);
+    sendMessage(jid, msg, callback){
+        this.logger.log("info",
+            `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} message to ${jid} Content: ${msg}`);
+        let req = sendChatMessage(jid, msg, jid.endsWith("groups.kik.com"));
         this.connection.sendXmlFromJs(req.xml);
         if(callback){
             this.dataHandler.addCallback(req.id, callback);

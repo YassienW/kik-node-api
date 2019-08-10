@@ -14,7 +14,9 @@ const EventEmitter = require("events"),
     addFriend = require("./requests/addFriend"),
     setAdmin = require("./requests/setAdmin"),
     setBanned = require("./requests/setBanned"),
-    setGroupMember = require("./requests/setGroupMember");
+    setGroupMember = require("./requests/setGroupMember"),
+    setGroupName = require("./requests/setGroupName"),
+    setProfileName = require("./requests/setProfileName");
 
 class KikClient extends EventEmitter {
     constructor(params){
@@ -161,6 +163,14 @@ class KikClient extends EventEmitter {
     setGroupMember(groupJid, userJid, bool){
         this.logger.log("info", `Setting member = ${bool} for jid ${userJid} in group ${groupJid}`);
         this.connection.sendXmlFromJs(setGroupMember(groupJid, userJid, bool));
+    }
+    setGroupName(groupJid, groupName){
+        this.logger.log("info", `Setting group name to ${groupName} for group ${groupJid}`);
+        this.connection.sendXmlFromJs(setGroupName(groupJid, groupName));
+    }
+    setProfileName(firstName, lastName){
+        this.logger.log("info", `Setting profile name to ${firstName} ${lastName}`);
+        this.connection.sendXmlFromJs(setProfileName(firstName, lastName));
     }
 }
 module.exports = KikClient;

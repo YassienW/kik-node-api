@@ -41,11 +41,13 @@ npm i kik-node-api
 
 1. [Group Requests](#group-requests)
     * [Send Group Message](#send-group-message)
-    * [Kick/Add](#kick/add)
-    * [Promote/Demote](#promote/demote)
-    * [Ban/Unban](#ban/unban)
+    * [Kick/Add](#kickadd)
+    * [Promote/Demote](#promotedemote)
+    * [Ban/Unban](#banunban)
+    * [Change Group Name](#change-group-name)
 2. [Private Requests](#private-requests)
     * [Send Private Message](#send-private-message)
+    * [Set Profile Name](#set-profile-name)
 ---
 
 ### Getting Started
@@ -292,6 +294,12 @@ Kik.setAdmin(groupJid, userJid, bool)
 Kik.setBanned(groupJid, userJid, bool)
 ```
 
+##### Change Group Name
+
+```javascript
+Kik.setGroupName(groupJid, name)
+```
+
 #### Private Requests
 ##### Send Private Message
 ```javascript
@@ -303,5 +311,12 @@ Kik.sendPrivateMessage(userJid, msg, (delivered, read) => {
     }
 })
 ```
+
+##### Set Profile Name
+
+```javascript
+Kik.setProfileName(firstName, lastName)
+```
+
 ## License
 [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)

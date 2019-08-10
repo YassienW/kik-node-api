@@ -16,7 +16,8 @@ const EventEmitter = require("events"),
     setBanned = require("./requests/setBanned"),
     setGroupMember = require("./requests/setGroupMember"),
     setGroupName = require("./requests/setGroupName"),
-    setProfileName = require("./requests/setProfileName");
+    setProfileName = require("./requests/setProfileName"),
+    sendImage = require("./requests/sendImage");
 
 class KikClient extends EventEmitter {
     constructor(params){
@@ -124,6 +125,15 @@ class KikClient extends EventEmitter {
         this.logger.log("info",
             `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} message to ${jid} Content: ${msg}`);
         let req = sendChatMessage(jid, msg, jid.endsWith("groups.kik.com"));
+        this.connection.sendXmlFromJs(req.xml);
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback);
+        }
+    }
+    sendImage(jid, imgPath, callback){
+        this.logger.log("info",
+            `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} image to ${jid} Path: ${imgPath}`);
+        let req = sendImage(jid, imgPath, jid.endsWith("groups.kik.com"));
         this.connection.sendXmlFromJs(req.xml);
         if(callback){
             this.dataHandler.addCallback(req.id, callback);

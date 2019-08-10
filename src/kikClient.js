@@ -130,10 +130,10 @@ class KikClient extends EventEmitter {
             this.dataHandler.addCallback(req.id, callback);
         }
     }
-    sendImage(jid, imgPath, callback){
+    sendImage(jid, imgPath, allowForwarding, callback){
         this.logger.log("info",
             `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} image to ${jid} Path: ${imgPath}`);
-        let req = sendImage(jid, imgPath, jid.endsWith("groups.kik.com"));
+        let req = sendImage(jid, imgPath, jid.endsWith("groups.kik.com"), allowForwarding);
         this.connection.sendXmlFromJs(req.xml);
         if(callback){
             this.dataHandler.addCallback(req.id, callback);

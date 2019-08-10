@@ -2,7 +2,7 @@ const crypto = require("../cryptoUtils"),
     path = require("path"),
     fs = require("fs");
 
-module.exports = (jid, imgPath, isGroup) => {
+module.exports = (jid, imgPath, isGroup, allowForwarding = true) => {
     const timestamp = new Date().getTime(), id = crypto.generateUUID(), contentId = crypto.generateUUID();
     const type = (isGroup? "groupchat" : "chat");
     const buff = fs.readFileSync(imgPath);
@@ -46,7 +46,7 @@ module.exports = (jid, imgPath, isGroup) => {
                             _text: buff.byteLength
                         },
                         "allow-forward": {
-                            _text: "true"
+                            _text: allowForwarding
                         },
                         "file-name": {
                             _text: path.basename(imgPath)

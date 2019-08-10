@@ -1,5 +1,4 @@
-const config = require("../config"),
-    crypto = require("../cryptoUtils")
+const crypto = require("../cryptoUtils");
 
 //true bans, false unbans
 module.exports = (groupJid, userJid, bool) => {
@@ -26,6 +25,6 @@ module.exports = (groupJid, userJid, bool) => {
                 }
             }
         }
-    })
-}
+    });
+};
 

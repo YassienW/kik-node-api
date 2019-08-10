@@ -1,5 +1,4 @@
-const config = require("../config"),
-    crypto = require("../cryptoUtils")
+const crypto = require("../cryptoUtils");
 
 //true adds user, false removes him
 //note that you can only add a user using his raw JID
@@ -27,6 +26,6 @@ module.exports = (groupJid, userJid, bool) => {
                 }
             }
         }
-    })
-}
+    });
+};
 

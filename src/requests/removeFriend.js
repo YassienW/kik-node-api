@@ -1,4 +1,4 @@
-crypto = require("../cryptoUtils")
+const crypto = require("../cryptoUtils");
 
 //you must use the raw jid here
 module.exports = (jid) => {
@@ -19,5 +19,5 @@ module.exports = (jid) => {
                 }
             },
         }
-    })
-}
+    });
+};

@@ -54,7 +54,7 @@ You can use the API by creating an instance of `KikClient`, you'll use it to lis
 to events and send requests to kik
 
 ```javascript
-const KikClient = require("kik-node-api")
+const KikClient = require("kik-node-api");
 
 Kik = new KikClient({
     username: "username",
@@ -62,7 +62,7 @@ Kik = new KikClient({
     promptCaptchas: true,
     trackUserInfo: true,
     trackFriendInfo: true
-})
+});
 
 Kik.connect()
 ```
@@ -121,7 +121,7 @@ Kik.on("authenticated", () => {
 
 ```javascript
 Kik.on("receivedroster", (groups, friends) => {
-    console.log(groups)
+    console.log(groups);
     console.log(friends)
 })
 ```
@@ -142,7 +142,7 @@ Kik.on("receivedcaptcha", (captchaUrl) => {
 
 ```javascript
 Kik.on("receivedjidinfo", (users) => {
-    console.log("We got peer info:")
+    console.log("We got peer info:");
     console.log(users)
 })
 ```

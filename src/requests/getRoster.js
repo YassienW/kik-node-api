@@ -1,7 +1,7 @@
-crypto = require("../cryptoUtils")
+const crypto = require("../cryptoUtils");
 
 module.exports = () => {
-    let id = crypto.generateUUID()
+    let id = crypto.generateUUID();
     return({
         id: id,
         xml: {
@@ -18,5 +18,5 @@ module.exports = () => {
                 }
             }
         }
-    })
-}
+    });
+};

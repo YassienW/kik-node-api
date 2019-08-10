@@ -25,5 +25,7 @@
     "uuid": "^3.3.2",
     "xml-js": "^1.6.8"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "eslint": "^6.1.0"
+  }
 }

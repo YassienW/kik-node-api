@@ -1,10 +1,10 @@
 const config = require("../config"),
-    crypto = require("../cryptoUtils")
+    crypto = require("../cryptoUtils");
 
 module.exports = (username, password, node, deviceID) => {
-    let timestamp = "1496333389122"
-    let sid = crypto.generateUUID()
-    let jid = `${node}@talk.kik.com`
+    let timestamp = "1496333389122";
+    let sid = crypto.generateUUID();
+    let jid = `${node}@talk.kik.com`;
     return({
         k: {
             _attributes: crypto.sortPayload({
@@ -21,6 +21,6 @@ module.exports = (username, password, node, deviceID) => {
                 cv: crypto.generateCV(config.kikVersionInfo, timestamp, jid)
             })
         }
-    })
-}
+    });
+};
 

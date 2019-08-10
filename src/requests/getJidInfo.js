@@ -1,18 +1,18 @@
-crypto = require("../cryptoUtils")
+const crypto = require("../cryptoUtils");
 
 //array of jids, or one jid string
 module.exports = (jids) => {
-    let items = [], id = crypto.generateUUID()
+    let items = [], id = crypto.generateUUID();
     if(!Array.isArray(jids)){
-        jids = [jids]
+        jids = [jids];
     }
     jids.forEach((jid) => {
         items.push({
             "_attributes": {
                 jid: jid
             }
-        })
-    })
+        });
+    });
     return({
         id: id,
         xml: {
@@ -29,5 +29,5 @@ module.exports = (jids) => {
                 }
             }
         }
-    })
-}
+    });
+};

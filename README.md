@@ -39,14 +39,15 @@ npm i kik-node-api
 
 ##### Requests
 
-1. [Group Requests](#group-requests)
-    * [Send Group Message](#send-group-message)
+1. [Common Requests](#common-requests)
+    * [Send Message](#send-message)
+    * [Send Image](#send-image)
+2. [Group Requests](#group-requests)
     * [Kick/Add](#kickadd)
     * [Promote/Demote](#promotedemote)
     * [Ban/Unban](#banunban)
     * [Change Group Name](#change-group-name)
-2. [Private Requests](#private-requests)
-    * [Send Private Message](#send-private-message)
+3. [Private Requests](#private-requests)
     * [Set Profile Name](#set-profile-name)
 ---
 
@@ -72,7 +73,7 @@ Kik.connect()
 
 `password`: your kik account's password
 
-`promptCaptchas`: prompt in the console to solve captchas. If not you must handle it yourself using the event
+`promptCaptchas`: prompt in the console to solve captchas. If not you must handle it yourself using the [event](#received-captcha)
 
 `trackUserInfo`: track users and return their usernames and display names in the events when possible
 
@@ -260,14 +261,18 @@ Kik.on("privatetyping", (sender, isTyping) => {
 `isTyping`: true if the user is typing, false if he stopped
 
 ### Requests
-#### Group Requests
 
 Note that all callback functions can be excluded
 
-##### Send Group Message
+#### Common Requests
+
+You can provide a group's or a user's jid, they will automatically use 
+the appropriate format
+
+##### Send Message
 
 ```javascript
-Kik.sendGroupMessage(groupJid, msg, (delivered, read) => {
+Kik.sendMessage(jid, msg, (delivered, read) => {
     if(delivered){
         console.log("Delivered")
     }else if(read){
@@ -276,6 +281,16 @@ Kik.sendGroupMessage(groupJid, msg, (delivered, read) => {
 })
 ```
 
+##### Send Image
+
+```javascript
+Kik.sendImage(jid, imgPath, allowForwarding)
+```
+
+`allowForwarding`: boolean, if false this image will not give the 
+receiver a forwarding option. true by default
+
+#### Group Requests
 ##### Kick/Add
 
 ```javascript
@@ -301,17 +316,6 @@ Kik.setGroupName(groupJid, name)
 ```
 
 #### Private Requests
-##### Send Private Message
-```javascript
-Kik.sendPrivateMessage(userJid, msg, (delivered, read) => {
-    if(delivered){
-        console.log("Delivered")
-    }else if(read){
-        console.log("Read")
-    }
-})
-```
-
 ##### Set Profile Name
 
 ```javascript

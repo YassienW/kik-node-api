@@ -19,7 +19,7 @@ const EventEmitter = require("events"),
     setProfileName = require("./requests/setProfileName"),
     sendImage = require("./requests/sendImage");
 
-class KikClient extends EventEmitter {
+module.exports = class KikClient extends EventEmitter {
     constructor(params){
         super();
 
@@ -175,6 +175,5 @@ class KikClient extends EventEmitter {
         this.logger.log("info", `Setting profile name to ${firstName} ${lastName}`);
         this.connection.sendXmlFromJs(setProfileName(firstName, lastName));
     }
-}
-module.exports = KikClient;
+};
 

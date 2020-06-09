@@ -53,7 +53,7 @@ Kik.on("userjoinedgroup", (group, user, invitedBy) => {
 
 /*PRIVATE EVENTS*/
 Kik.on("receivedprivatemsg", (sender, msg) => {
-    Kik.sendPrivateMessage(sender.jid, msg, (delivered, read) => {
+    Kik.sendMessage(sender.jid, msg, (delivered, read) => {
         if(delivered){
             console.log(`PRIVATE: ${sender.jid} PM read`)
         }else if(read){

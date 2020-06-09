@@ -2,41 +2,42 @@ const crypto = require("crypto"),
     uuidv4 = require("uuid/v4"),
     converter = require("hex2dec"),
     bigInt = require("big-integer"),
-    cryptoUtils = module.exports
+    cryptoUtils = module.exports;
 
 cryptoUtils.generatePasskey = (username, password) => {
     let sha1Password = crypto.createHash("sha1").update(password).digest("hex");
-    let salt = username.toLowerCase() + "niCRwL7isZHny24qgLvy"
-    return crypto.pbkdf2Sync(sha1Password, salt, 8192, 16, "sha1").toString("hex")
-}
+    let salt = username.toLowerCase() + "niCRwL7isZHny24qgLvy";
+    return crypto.pbkdf2Sync(sha1Password, salt, 8192, 16, "sha1").toString("hex");
+};
 cryptoUtils.generateUUID = () => {
-    let uuid = uuidv4()
+    let uuid = uuidv4();
     //remove the dashes
-    let bytes = Buffer.from(uuid.replace(/-/g, ""), "hex")
-    let msb = bigInt(converter.hexToDec(bytes.slice(0, 8).toString("hex")))
-    let lsb = bigInt(converter.hexToDec(bytes.slice(8).toString("hex")))
+    let bytes = Buffer.from(uuid.replace(/-/g, ""), "hex");
+    let msb = bigInt(converter.hexToDec(bytes.slice(0, 8).toString("hex")));
+    let lsb = bigInt(converter.hexToDec(bytes.slice(8).toString("hex")));
 
-    let iArr = [[3, 6], [2, 5], [7, 1], [9, 5]]
-    let i2 = bigInt("-1152921504606846976").and(msb).shiftRight(62)
-    let i3 = iArr[i2][0]
-    i2 = iArr[i2][1]
-    let j = msb.and(-16777216).shiftRight(22).xor(msb.and(16711680).shiftRight(16)).xor(msb.and(65280).shiftRight(8))
-    i2 = UUIDSubFunc(msb, i2).plus(1).or(UUIDSubFunc(msb, i3).shiftLeft(1))
+    let iArr = [[3, 6], [2, 5], [7, 1], [9, 5]];
+    let i2 = bigInt("-1152921504606846976").and(msb).shiftRight(62);
+    let i3 = iArr[i2][0];
+    i2 = iArr[i2][1];
+    let j = msb.and(-16777216).shiftRight(22).xor(msb.and(16711680).shiftRight(16)).xor(msb.and(65280).shiftRight(8));
+    i2 = UUIDSubFunc(msb, i2).plus(1).or(UUIDSubFunc(msb, i3).shiftLeft(1));
 
-    let k = 1
+    let k = 1;
     for(let i = 0; i < 6; i++){
-        k = (k + (i2 * 7)) % 60
-        lsb = lsb.and(bigInt(1).shiftLeft(k + 2).xor(-1)).or((UUIDSubFunc(j, i).shiftLeft(k + 2)))
+        k = (k + (i2 * 7)) % 60;
+        lsb = lsb.and(bigInt(1).shiftLeft(k + 2).xor(-1)).or((UUIDSubFunc(j, i).shiftLeft(k + 2)));
     }
-    let final = converter.decToHex(msb.toString(), {prefix: false}) + converter.decToHex(lsb.toString(), {prefix: false})
-    return `${final.slice(0, 8)}-${final.slice(8, 12)}-${final.slice(12, 16)}-${final.slice(16, 20)}-${final.slice(20)}`
-}
+    let final = converter.decToHex(msb.toString(), {prefix: false}) + converter.decToHex(lsb.toString(),
+        {prefix: false});
+    return `${final.slice(0, 8)}-${final.slice(8, 12)}-${final.slice(12,16)}-${final.slice(16, 20)}-${final.slice(20)}`;
+};
 //used internally only, the values received here have to be of type bigInt
 function UUIDSubFunc(i, j) {
     if (bigInt(j).compare(32) === 1) {
-        return i.shiftRight(32).and(bigInt(1).shiftLeft(j)).shiftRight(j)
+        return i.shiftRight(32).and(bigInt(1).shiftLeft(j)).shiftRight(j);
     }
-    return bigInt(1).shiftLeft(j).and(i).shiftRight(j)
+    return bigInt(1).shiftLeft(j).and(i).shiftRight(j);
 }
 cryptoUtils.generateCV = (versionInfo, timestamp, jid) => {
     let apkSignatureHex =
@@ -60,71 +61,72 @@ cryptoUtils.generateCV = (versionInfo, timestamp, jid) => {
         "FCA3A6C505CEA355BD91502226E1778E96B0C67D6A3C3F79DE6F594429F2B6A03591C0A01C3F14BB6FF56D75" +
         "15BB2F38F64A00FF07834ED3A06D70C38FC18004F85CAB3C937D3F94B366E2552558929B98D088CF1C45CDC0" +
         "340755E4305698A7067F696F4ECFCEEAFBD720787537199BCAC674DAB54643359BAD3E229D588E324941941E" +
-        "0270C355DC38F9560469B452C36560AD5AB9619B6EB33705"
-    let keySource = "hello" + Buffer.from(apkSignatureHex, "hex").toString("binary") + versionInfo.version + versionInfo.sha1Digest + "bar"
-    let hmacKey = crypto.createHash("sha1").update(keySource, "ascii").digest("base64")
-    let hmacData = timestamp + ":" + jid
-    return crypto.createHmac("sha1", hmacKey).update(hmacData).digest("hex")
-}
+        "0270C355DC38F9560469B452C36560AD5AB9619B6EB33705";
+    let keySource = "hello" + Buffer.from(apkSignatureHex, "hex").toString("binary") + versionInfo.version +
+        versionInfo.sha1Digest + "bar";
+    let hmacKey = crypto.createHash("sha1").update(keySource, "ascii").digest("base64");
+    let hmacData = timestamp + ":" + jid;
+    return crypto.createHmac("sha1", hmacKey).update(hmacData).digest("hex");
+};
 cryptoUtils.generateSignature = (kikVersion, timestamp, jid, sid) => {
     let privateKeyPem = "-----BEGIN RSA PRIVATE KEY-----\nMIIBPAIBAAJBANEWUEINqV1KNG7Yie9GSM8t75ZvdTeqT7kOF40kvDHIp" +
         "/C3tX2bcNgLTnGFs8yA2m2p7hKoFLoxh64vZx5fZykCAwEAAQJAT" +
         "/hC1iC3iHDbQRIdH6E4M9WT72vN326Kc3MKWveT603sUAWFlaEa5T80GBiP/qXt9PaDoJWcdKHr7RqDq" +
         "+8noQIhAPh5haTSGu0MFs0YiLRLqirJWXa4QPm4W5nz5VGKXaKtAiEA12tpUlkyxJBuuKCykIQbiUXHEwzFYbMHK5E" +
         "/uGkFoe0CIQC6uYgHPqVhcm5IHqHM6/erQ7jpkLmzcCnWXgT87ABF2QIhAIzrfyKXp1ZfBY9R0H4pbboHI4uatySKc" +
-        "Q5XHlAMo9qhAiEA43zuIMknJSGwa2zLt/3FmVnuCInD6Oun5dbcYnqraJo=\n-----END RSA PRIVATE KEY----- "
+        "Q5XHlAMo9qhAiEA43zuIMknJSGwa2zLt/3FmVnuCInD6Oun5dbcYnqraJo=\n-----END RSA PRIVATE KEY----- ";
 
     let data = crypto.createHash("sha256").update(`${jid}:${kikVersion}:${timestamp}:${sid}`).digest("hex");
-    return crypto.createSign("RSA-SHA1").update(data).sign(privateKeyPem, "base64")
-}
+    return crypto.createSign("RSA-SHA1").update(data).sign(privateKeyPem, "base64");
+};
 //receives an object and sorts it according to kik's sekrit crypto algorithms then returns it as JS object
 //if the object i return doesn't preserve order, i could return JSON instead
 cryptoUtils.sortPayload = (object) => {
-    let map = new Map(Object.entries(object))
-    let originalLength = map.size
-    let keys = [...map.keys()]
-    keys.sort()
-    let outputMap = new Map()
+    let map = new Map(Object.entries(object));
+    let originalLength = map.size;
+    let keys = [...map.keys()];
+    keys.sort();
+    let outputMap = new Map();
 
     for (let i = 0; i < originalLength; i++){
-        let hashCode = payloadHash(map)
-        hashCode = (hashCode > 0? hashCode % map.size : hashCode % -map.size)
+        let hashCode = payloadHash(map);
+        hashCode = (hashCode > 0? hashCode % map.size : hashCode % -map.size);
         if (hashCode < 0){
-            hashCode += map.size
+            hashCode += map.size;
         }
-        let selectedKey = keys[hashCode]
-        keys.splice(hashCode, 1)
-        outputMap.set(selectedKey, map.get(selectedKey))
-        map.delete(selectedKey)
+        let selectedKey = keys[hashCode];
+        keys.splice(hashCode, 1);
+        outputMap.set(selectedKey, map.get(selectedKey));
+        map.delete(selectedKey);
     }
     //empty object before filling it up with the new order
-    object = {}
+    object = {};
     outputMap.forEach((v, k) => {
-        object[k] = v
-    })
-    return object
-}
+        object[k] = v;
+    });
+    return object;
+};
 function payloadHash(map) {
-    let keys = [...map.keys()]
-    keys.sort()
-    let string1 = ""
+    let keys = [...map.keys()];
+    keys.sort();
+    let string1 = "";
     for(let key in keys){
-        string1 += keys[key] + map.get(keys[key])
+        string1 += keys[key] + map.get(keys[key]);
     }
-    keys.reverse()
-    let string2 = ""
+    keys.reverse();
+    let string2 = "";
     for(let key in keys){
-        string2 += keys[key] + map.get(keys[key])
+        string2 += keys[key] + map.get(keys[key]);
     }
 
     let arr = [hashSubfunction(0, string1), hashSubfunction(1, string1), hashSubfunction(2, string1),
-        hashSubfunction(0, string2), hashSubfunction(1, string2), hashSubfunction(2, string2)]
-    let hashBase = -1964139357
-    let hashOffset = 7
-    return (((hashBase ^ (arr[0] << hashOffset)) ^ (arr[5] << (hashOffset * 2))) ^ (arr[1] << hashOffset)) ^ arr[0]
+        hashSubfunction(0, string2), hashSubfunction(1, string2), hashSubfunction(2, string2)];
+    let hashBase = -1964139357;
+    let hashOffset = 7;
+    return (((hashBase ^ (arr[0] << hashOffset)) ^ (arr[5] << (hashOffset * 2))) ^ (arr[1] << hashOffset)) ^ arr[0];
 }
 function hashSubfunction(hashId, bytes){
-    let j = 0,  buffer
+    let j = 0,  buffer;
     if(hashId === 0){
         buffer = crypto.createHash("sha256").update(bytes).digest();
     }else if(hashId === 1){
@@ -133,15 +135,16 @@ function hashSubfunction(hashId, bytes){
         buffer = crypto.createHash("md5").update(bytes).digest();
     }
     for (let i = 0; i < buffer.length; i+=4){
-        j ^= ((((byteToSignedInt(buffer[i + 3])) << 24) | ((byteToSignedInt(buffer[i + 2])) << 16)) | ((byteToSignedInt(buffer[i + 1])) << 8)) | (byteToSignedInt(buffer[i]))
+        j ^= ((((byteToSignedInt(buffer[i + 3])) << 24) | ((byteToSignedInt(buffer[i + 2])) << 16)) |
+            ((byteToSignedInt(buffer[i + 1])) << 8)) | (byteToSignedInt(buffer[i]));
     }
-    return j
+    return j;
 }
 function byteToSignedInt(byte){
     if (byte > 127){
-        return (256 - byte) * -1
+        return (256 - byte) * -1;
     }
-    return byte
+    return byte;
 }
 
 

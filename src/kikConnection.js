@@ -6,52 +6,52 @@ const tls = require("tls"),
 
 class KikConnection extends EventEmitter{
     constructor(logger, callback){
-        super()
-        this.logger = logger
+        super();
+        this.logger = logger;
 
         this.socket = tls.connect({
             host: "talk1110an.kik.com",
             port: 5223
         });
         this.socket.on("connect", () => {
-            this.logger.log("info", "Connected to kik")
-            callback()
-        })
+            this.logger.log("info", "Connected to kik");
+            callback();
+        });
         this.socket.on("end", () => {
-            callback("Server ended")
-        })
+            callback("Server ended");
+        });
         this.socket.on("error", err => {
-            callback(err)
-        })
+            callback(err);
+        });
         this.socket.on("data", data => {
             //apparently this is the max length we can receive in one packet, we have to combine it with the next packet
             //before passing it to the client, to make sure it is a full message, note this ONLY works if the packet
             //is split to 2, 3 would break
             if(data.length >= 16384){
-                this.prevPacket = data
+                this.prevPacket = data;
             }else{
-                let fullPacket = data
+                let fullPacket = data;
                 if(this.prevPacket){
-                    fullPacket = this.prevPacket + fullPacket
-                    this.prevPacket = null
+                    fullPacket = this.prevPacket + fullPacket;
+                    this.prevPacket = null;
                 }
-                this.emit("data", new JSSoup(fullPacket))
-                this.logger.log("raw", `Received data (${fullPacket.length}): ${fullPacket}`)
+                this.emit("data", new JSSoup(fullPacket));
+                this.logger.log("raw", `Received data (${fullPacket.length}): ${fullPacket}`);
             }
-        })
+        });
     }
     disconnect(){
-        this.socket.destroy()
+        this.socket.destroy();
     }
     sendXmlFromJs(js, removeClosingTag){
-        let xml = convert.js2xml(js, {compact: true})
-        xml = (removeClosingTag? xml.slice(0, xml.length - 2) + ">" : xml)
-        this.logger.log("raw", `Writing XML to server: ${xml}`)
-        this.socket.write(xml)
+        let xml = convert.js2xml(js, {compact: true});
+        xml = (removeClosingTag? xml.slice(0, xml.length - 2) + ">" : xml);
+        this.logger.log("raw", `Writing XML to server: ${xml}`);
+        this.socket.write(xml);
     }
     sendRawData(data){
-        this.logger.log("raw", `Writing raw to server: ${data}`)
-        this.socket.write(data)
+        this.logger.log("raw", `Writing raw to server: ${data}`);
+        this.socket.write(data);
     }
 }
-module.exports = KikConnection
+module.exports = KikConnection;

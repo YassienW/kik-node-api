@@ -1,22 +1,22 @@
 const fs = require("fs"),
-    https = require("https")
+    https = require("https");
 
 class ImageManager {
     constructor(username, saveImages){
-        this.username = username
-        this.saveImages = saveImages
+        this.username = username;
+        this.saveImages = saveImages;
 
-        if(!fs.existsSync(`./images`)){
-            fs.mkdirSync(`./images`)
+        if(!fs.existsSync("./images")){
+            fs.mkdirSync("./images");
         }
         if(!fs.existsSync(`./images/${this.username}`)){
-            fs.mkdirSync(`./images/${this.username}`)
+            fs.mkdirSync(`./images/${this.username}`);
         }
         if(!fs.existsSync(`./images/${this.username}/groups`)){
-            fs.mkdirSync(`./images/${this.username}/groups`)
+            fs.mkdirSync(`./images/${this.username}/groups`);
         }
         if(!fs.existsSync(`./images/${this.username}/private`)){
-            fs.mkdirSync(`./images/${this.username}/private`)
+            fs.mkdirSync(`./images/${this.username}/private`);
         }
     }
     //2nd param is used for determining which folder to save in
@@ -25,23 +25,23 @@ class ImageManager {
         https.get(url, (res) => {
             //second req returns the actual image
             https.get(res.headers.location, (res) => {
-                let dataArr = []
+                let dataArr = [];
 
                 res.on("data", (data) => {
-                    dataArr.push(data)
+                    dataArr.push(data);
                 });
                 res.on("end", () => {
-                    let buffer = Buffer.concat(dataArr)
-                    let date = new Date().toISOString().substring(0, 10)
+                    let buffer = Buffer.concat(dataArr);
+                    let date = new Date().toISOString().substring(0, 10);
 
                     if(this.saveImages){
                         if(isPrivate){
-                            fs.writeFileSync(`./images/${this.username}/private/${date}_${Date.now()}.jpeg`, buffer)
+                            fs.writeFileSync(`./images/${this.username}/private/${date}_${Date.now()}.jpeg`, buffer);
                         }else{
-                            fs.writeFileSync(`./images/${this.username}/groups/${date}_${Date.now()}.jpeg`, buffer)
+                            fs.writeFileSync(`./images/${this.username}/groups/${date}_${Date.now()}.jpeg`, buffer);
                         }
                     }
-                    return buffer
+                    return buffer;
                 });
 
             }).on("error", (err) => {
@@ -53,4 +53,4 @@ class ImageManager {
         });
     }
 }
-module.exports = ImageManager
+module.exports = ImageManager;

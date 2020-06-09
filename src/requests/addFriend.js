@@ -1,4 +1,4 @@
-crypto = require("../cryptoUtils")
+const crypto = require("../cryptoUtils");
 
 //parsed jids work here
 module.exports = (jid) => {
@@ -19,5 +19,5 @@ module.exports = (jid) => {
                 }
             },
         }
-    })
-}
+    });
+};

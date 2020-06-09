@@ -1,8 +1,8 @@
-crypto = require("../cryptoUtils")
+const crypto = require("../cryptoUtils");
 
 module.exports = (jid, msg, isGroup) => {
-    let timestamp = new Date().getTime(), id = crypto.generateUUID()
-    let type = (isGroup? "groupchat" : "chat")
+    let timestamp = new Date().getTime(), id = crypto.generateUUID();
+    let type = (isGroup? "groupchat" : "chat");
     return({
         id: id,
         xml: {
@@ -39,5 +39,5 @@ module.exports = (jid, msg, isGroup) => {
                 }
             }
         }
-    })
-}
+    });
+};

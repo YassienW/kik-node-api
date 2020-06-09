@@ -1,5 +1,5 @@
 const config = require("../config"),
-    crypto = require("../cryptoUtils")
+    crypto = require("../cryptoUtils");
 
 module.exports = (username, password, deviceID, androidID, captchaResponse) => {
     return({
@@ -67,6 +67,6 @@ module.exports = (username, password, deviceID, androidID, captchaResponse) => {
                 }
             }
         }
-    })
-}
+    });
+};
 

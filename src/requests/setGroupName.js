@@ -1,23 +1,26 @@
 const crypto = require("../cryptoUtils");
 
-//you must use the raw jid here
-module.exports = (jid) => {
+module.exports = (groupJid, name) => {
     return({
         iq: {
             _attributes: {
                 type: "set",
-                id: crypto.generateUUID(),
+                id: crypto.generateUUID()
             },
             query: {
                 _attributes: {
-                    xmlns: "kik:iq:friend"
+                    xmlns: "kik:groups:admin"
                 },
-                remove: {
+                g: {
                     _attributes: {
-                        jid: jid
+                        jid: groupJid
+                    },
+                    n: {
+                        _text: name
                     }
                 }
-            },
+            }
         }
     });
 };
+

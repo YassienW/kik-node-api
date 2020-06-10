@@ -17,11 +17,16 @@
   "author": "Yassien",
   "license": "AGPL-3.0-only",
   "dependencies": {
+    "axios": "^0.19.2",
     "big-integer": "^1.6.40",
     "binascii": "0.0.2",
+    "blockhash": "^0.2.0",
     "crypto-js": "^3.1.9-1",
     "hex2dec": "^1.1.1",
+    "jpeg-js": "^0.4.0",
     "jssoup": "0.0.10",
+    "png-js": "^1.0.0",
+    "sharp": "^0.25.3",
     "uuid": "^3.3.2",
     "xml-js": "^1.6.8"
   },

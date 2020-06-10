@@ -146,5 +146,16 @@ function byteToSignedInt(byte){
     }
     return byte;
 }
+cryptoUtils.generateImageVerification = (contentId, appId) => {
+    const salt = "YA=57aSA!ztajE5";
+    return crypto.createHash("sha1").update(`${salt}${contentId}${appId}`).digest("hex");
+};
+cryptoUtils.bufferToSha1 = (buffer) => {
+    return crypto.createHash("sha1").update(buffer).digest("hex");
+};
+cryptoUtils.bufferToMd5 = (buffer) => {
+    return crypto.createHash("md5").update(buffer).digest("hex");
+};
+
 
 

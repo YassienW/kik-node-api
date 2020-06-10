@@ -91,10 +91,12 @@ class ImageManager {
                 });
 
             }).on("error", (err) => {
+                console.log("Error downloading image:");
                 console.log(err);
             });
 
         }).on("error", (err) => {
+            console.log("Error downloading image:");
             console.log(err);
         });
     }

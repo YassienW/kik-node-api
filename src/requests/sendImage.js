@@ -1,11 +1,8 @@
-const crypto = require("../cryptoUtils"),
-    path = require("path"),
-    fs = require("fs");
+const crypto = require("../cryptoUtils");
 
-module.exports = (jid, imgPath, isGroup, allowForwarding = true) => {
-    const timestamp = new Date().getTime(), id = crypto.generateUUID(), contentId = crypto.generateUUID();
+module.exports = (jid, image, isGroup, allowForwarding = true, allowSaving = true) => {
+    const timestamp = new Date().getTime(), id = crypto.generateUUID();
     const type = (isGroup? "groupchat" : "chat");
-    const buff = fs.readFileSync(imgPath);
 
     return({
         id: id,
@@ -34,7 +31,7 @@ module.exports = (jid, imgPath, isGroup, allowForwarding = true) => {
                 },
                 content: {
                     _attributes: {
-                        id: contentId,
+                        id: image.contentId,
                         v: "2",
                         "app-id": "com.kik.ext.gallery"
                     },
@@ -43,18 +40,35 @@ module.exports = (jid, imgPath, isGroup, allowForwarding = true) => {
                             _text: "Gallery"
                         },
                         "file-size": {
-                            _text: buff.byteLength
+                            _text: image.size
                         },
                         "allow-forward": {
                             _text: allowForwarding
                         },
+                        "disallow-save": {
+                            _text: !allowSaving
+                        },
+                        "file-content-type": {
+                            _text: "image/jpeg"
+                        },
                         "file-name": {
-                            _text: path.basename(imgPath)
+                            _text: `${image.contentId}.jpg`
+                        }
+                    },
+                    hashes: {
+                        "sha1-original": {
+                            _text: image.sha1
+                        },
+                        "sha1-scaled": {
+                            _text: image.previewSha1
+                        },
+                        "blockhash-scaled": {
+                            _text: image.previewBlockhash
                         }
                     },
                     images: {
                         preview: {
-                            _text: buff.toString("base64")
+                            _text: image.previewBase64
                         }
                     }
                 }

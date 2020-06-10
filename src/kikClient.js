@@ -26,7 +26,6 @@ module.exports = class KikClient extends EventEmitter {
         this.params = params;
         this.dataHandler = new DataHandler(this);
         this.logger = new Logger(["info", "warning", "error"], this.params.username);
-        this.imgManager = new ImageManager(this.params.username, true);
 
         //used for tracking
         this.groups = [];
@@ -78,6 +77,8 @@ module.exports = class KikClient extends EventEmitter {
                 }else{
                     this.initiateNodeConnection();
                 }
+                //we have to initialize imgManager after we have the session node
+                this.imgManager = new ImageManager(this.params.username, this.params.password, this.session.node, true);
             }
         });
         this.connection.on("data", (data) => {
@@ -130,10 +131,12 @@ module.exports = class KikClient extends EventEmitter {
             this.dataHandler.addCallback(req.id, callback);
         }
     }
-    sendImage(jid, imgPath, allowForwarding, callback){
+    async sendImage(jid, imgPath, allowForwarding, allowSaving, callback){
         this.logger.log("info",
             `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} image to ${jid} Path: ${imgPath}`);
-        let req = sendImage(jid, imgPath, jid.endsWith("groups.kik.com"), allowForwarding);
+
+        const image = await this.imgManager.uploadImg(imgPath);
+        let req = sendImage(jid, image, jid.endsWith("groups.kik.com"), allowForwarding, allowSaving);
         this.connection.sendXmlFromJs(req.xml);
         if(callback){
             this.dataHandler.addCallback(req.id, callback);

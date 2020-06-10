@@ -52,7 +52,8 @@ Kik.on("userjoinedgroup", (group, user, invitedBy) => {
 });
 
 /*PRIVATE EVENTS*/
-Kik.on("receivedprivatemsg", (sender, msg) => {
+Kik.on("receivedprivatemsg", async (sender, msg) => {
+    await Kik.sendImage(sender.jid, "path/to/img.png", false, false);
     Kik.sendMessage(sender.jid, msg, (delivered, read) => {
         if(delivered){
             console.log(`PRIVATE: ${sender.jid} PM read`)

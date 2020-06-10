@@ -48,8 +48,25 @@ module.exports = (jid, imgPath, isGroup, allowForwarding = true) => {
                         "allow-forward": {
                             _text: allowForwarding
                         },
+                        "disallow-save": {
+                            _text: !allowSaving
+                        },
+                        "file-content-type": {
+                            _text: "image/jpeg"
+                        },
                         "file-name": {
                             _text: path.basename(imgPath)
+                        }
+                    },
+                    hashes: {
+                        "sha1-original": {
+                            _text: ""
+                        },
+                        "sha1-scaled": {
+                            _text: ""
+                        },
+                        "blockhash-scaled": {
+                            _text: ""
                         }
                     },
                     images: {

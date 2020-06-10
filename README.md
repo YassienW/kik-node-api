@@ -284,11 +284,16 @@ Kik.sendMessage(jid, msg, (delivered, read) => {
 ##### Send Image
 
 ```javascript
-Kik.sendImage(jid, imgPath, allowForwarding)
+Kik.sendImage(jid, imgPath, allowForwarding, allowSaving)
 ```
 
 `allowForwarding`: boolean, if false this image will not give the 
 receiver a forwarding option. true by default
+
+`allowSaving`: boolean, if false this image will not give the 
+receiver a download option. true by default
+
+returns a promise, make sure to use this inside an async function with the await keyword
 
 #### Group Requests
 ##### Kick/Add

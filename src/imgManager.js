@@ -2,7 +2,7 @@ const fs = require("fs"),
     config = require("./config"),
     {blockhashData} = require("blockhash"),
     cryptoUtils = require("./cryptoUtils"),
-    sharp = require("sharp"),
+    sharp = require("./noSharp"), //removed dependency on native module sharp
     axios = require("axios"),
     https = require("https");
 
@@ -28,7 +28,7 @@ class ImageManager {
         }
     }
     async uploadImg(imgPath){
-        const image = sharp(imgPath);
+        const image = await sharp(imgPath); //got rid of sharp, now supports loading image urls
         const buffer = await image.jpeg().toBuffer();
         const raw = await image.jpeg().raw().toBuffer({resolveWithObject: true});
 

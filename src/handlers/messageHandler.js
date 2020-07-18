@@ -24,7 +24,7 @@ module.exports = (client, callbacks, id, data) => {
             client.emit("receivedgroupmsg", group, user, data.find("body").text);
         }else if(data.find("is-typing")){
             client.emit("grouptyping", group, user, data.find("is-typing").attrs.val === "true");
-        }else if(data.find("images")){
+        }else if(data.find("images") && data.find("file-url")){//solved crashes when sent cards
             client.emit("receivedgroupimg", group, user, client.imgManager.getImg(data.find("file-url").text, false));
         }else if(data.find("status")){
             let status = data.find("status");
@@ -79,7 +79,7 @@ module.exports = (client, callbacks, id, data) => {
             client.emit("receivedprivatemsg", user, data.find("body").text);
         }else if(type === "is-typing"){
             client.emit("privatetyping", user, data.find("is-typing").attrs.val === "true");
-        }else if(data.find("images")){
+        }else if(data.find("images") && data.find("file-url")){//resolved crashes when sent cards
             client.emit("receivedprivateimg", user, client.imgManager.getImg(data.find("file-url").text, true));
         }
     }else if(type === "receipt"){

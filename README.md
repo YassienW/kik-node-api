@@ -7,7 +7,20 @@ A chatting API for kik built with Node.js, based on <https://github.com/tomer800
 ![npm](https://img.shields.io/npm/v/kik-node-api.svg?style=plastic)
 ![npm](https://img.shields.io/npm/dt/kik-node-api.svg?style=plastic)
 
+**Modificcations**
+
+1. removed dependency on native module sharp allowing for use in containers such as glitch.com
+2. Lazily fixed crash caused by groups not providing username.
+3. Coincidentally added the ability to load images directly from URLs in the process of removing dependency on sharp.
+
+**To Do's**
+
+1. Add video(gif) and sticker support
+2. add chage profile picture functionality
+3. fix group picture message sending (maybe), possibly a # group related issue (unconfirmed).
+
 ## Installation
+This module is far from production ready please use the original modules that his on NPM: kik-node-api as shown below
 
 NPM:
 

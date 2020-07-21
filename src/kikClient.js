@@ -65,6 +65,9 @@ module.exports = class KikClient extends EventEmitter {
             }
         });
     }
+    setVersion(versionNumb = 15) { //version change function
+        global.versionNumb = versionNumb;
+    }
     connect(){
         this.connection = new KikConnection(this.logger, err => {
             if(err){
@@ -102,17 +105,17 @@ module.exports = class KikClient extends EventEmitter {
     getNode(){
         this.logger.log("info", "Requesting kik node");
         this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password, this.session.deviceID,
-            this.session.androidID));
+            this.session.androidID, this.params.version));
     }
     resolveCaptcha(response){
         this.logger.log("info", `Resolving captcha with response ${response}`);
         this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password, this.session.deviceID,
-            this.session.androidID, response));
+            this.session.androidID, this.params.version, response));
     }
     authRequest(){
         this.logger.log("info", "Sending auth request");
         this.connection.sendXmlFromJs(auth(this.params.username, this.params.password, this.session.node,
-            this.session.deviceID), true);
+            this.session.deviceID, this.params.version), true);
     }
     getRoster(callback){
         this.logger.log("info", "Getting roster");
@@ -135,7 +138,7 @@ module.exports = class KikClient extends EventEmitter {
         this.logger.log("info",
             `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} image to ${jid} Path: ${imgPath}`);
 
-        const image = await this.imgManager.uploadImg(imgPath);
+        const image = await this.imgManager.uploadImg(imgPath, this.params.version);
         let req = sendImage(jid, image, jid.endsWith("groups.kik.com"), allowForwarding, allowSaving);
         this.connection.sendXmlFromJs(req.xml);
         if(callback){

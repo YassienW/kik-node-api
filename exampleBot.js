@@ -5,7 +5,8 @@ const Kik = new KikClient({
     password: "1234",
     promptCaptchas: true,
     trackUserInfo: true,
-    trackFriendInfo: true
+    trackFriendInfo: true,
+    version: 15.25
 });
 Kik.on("authenticated", () => {
     //this is not needed since the client grabs roster automatically once authenticated

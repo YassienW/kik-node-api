@@ -10,8 +10,9 @@ A chatting API for kik built with Node.js, based on <https://github.com/tomer800
 **Modificcations**
 
 1. removed dependency on native module sharp allowing for use in containers such as glitch.com
-2. Lazily fixed crash caused by groups not providing username.
+2. ~~Lazy~~ slightly improved fix for crash caused by groups not providing username ".text"
 3. Coincidentally added the ability to load images directly from URLs in the process of removing dependency on sharp.
+4. added kik version changer, review [config.js](./src/config.js) to see exact versions
 
 **To Do's**
 
@@ -77,7 +78,8 @@ Kik = new KikClient({
     password: "1234",
     promptCaptchas: true,
     trackUserInfo: true,
-    trackFriendInfo: true
+    trackFriendInfo: true,
+    version: 15
 });
 
 Kik.connect()
@@ -91,6 +93,8 @@ Kik.connect()
 `trackUserInfo`: track users and return their usernames and display names in the events when possible
 
 `trackFriendInfo`: track friends and return their usernames and display names in the events when possible
+
+`version`: sets the kik version and corresponding sha1Digest options 14, 14.5, 15.25 if not included defaults to 15.25
 
 All users are represented in a js object that looks like this:
 ```

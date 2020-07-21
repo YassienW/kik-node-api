@@ -52,7 +52,7 @@ module.exports = (client, callbacks, id, data) => {
     } else if (xmlns === "kik:iq:friend:batch") {
         let users = [];
         data.findAll("item").forEach(user => {
-            //lazy fix for "(user.find("username").t͟e͟x͟t͟ does not exist)" bug 
+            //slightly better fix for "(user.find("username").t͟e͟x͟t͟ does not exist)" bug 
             users.push({
                 jid: user.attrs.jid,
                 // username: typeof (user.find("username").text) === "undefined" ? null : user.find("username").text,

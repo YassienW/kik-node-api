@@ -13,12 +13,13 @@ A chatting API for kik built with Node.js, based on <https://github.com/tomer800
 2. ~~Lazy~~ slightly improved fix for crash caused by groups not providing username ".text"
 3. Coincidentally added the ability to load images directly from URLs in the process of removing dependency on sharp.
 4. added kik version changer, review [config.js](./src/config.js) to see exact versions
+5. added support for sending and receiving stickers, with help from Vilppu on kik.
 
 **To Do's**
 
-1. Add video(gif) and sticker support
-2. add chage profile picture functionality
-3. fix group picture message sending (maybe), possibly a # group related issue (unconfirmed).
+1. Add video(gif) and ~~sticker~~ support
+2. add change profile picture functionality
+3. ~~fix group picture message sending (maybe), possibly a # group related issue (unconfirmed).~~
 
 ## Installation
 This module is far from production ready please use the original modules that his on NPM: kik-node-api as shown below
@@ -43,12 +44,14 @@ npm i kik-node-api
 2. [Group Events](#group-events)
     * [Received Group Message](#received-group-message)
     * [Received Group Image](#received-group-image)
+    * [Received Group Sticker](#received-group-sticker)
     * [Group Is Typing](#group-is-typing)
     * [User Left Group](#user-left-group)
     * [User Joined Group](#user-joined-group)
 3. [Private Events](#private-events)
     * [Received Private Message](#received-private-message)
     * [Received Private Image](#received-private-image)
+    * [Received Private Sticker](#received-private-sticker)
     * [Private Is Typing](#private-is-typing)
 
 ##### Requests
@@ -56,6 +59,7 @@ npm i kik-node-api
 1. [Common Requests](#common-requests)
     * [Send Message](#send-message)
     * [Send Image](#send-image)
+    * [Send Sticker](#send-sticker)
 2. [Group Requests](#group-requests)
     * [Kick/Add](#kickadd)
     * [Promote/Demote](#promotedemote)
@@ -195,6 +199,19 @@ Kik.on("receivedgroupimg", (group, sender, img) => {
 
 `img`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the image
 
+##### Received Group Sticker
+
+```javascript
+Kik.on("receivedgroupsticker", (group, sender, sticker) => {
+    console.log(`Received Sticker from ${sender.jid} in group ${group.jid}`)
+})
+```
+`group`: a [`group`](#getting-started) object representing the group where the message was sent
+
+`sender`: a [`user`](#getting-started) object representing the message sender
+
+`sticker`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the image
+
 
 ##### Group is Typing
 
@@ -262,6 +279,17 @@ Kik.on("receivedprivateimg", (sender, img) => {
 
 `img`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the image
 
+##### Received Private Sticker
+
+```javascript
+Kik.on("receivedprivatesticker", (sender, sticker) => {
+    console.log(`Received Sticker from ${sender.jid}`)
+})
+```
+`sender`: a [`user`](#getting-started) object representing the message sender
+
+`sticker`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the image
+
 ##### Private Is Typing
 
 ```javascript
@@ -309,6 +337,19 @@ receiver a forwarding option. true by default
 
 `allowSaving`: boolean, if false this image will not give the 
 receiver a download option. true by default
+
+returns a promise, make sure to use this inside an async function with the await keyword
+
+##### Send Sticker
+
+```javascript
+Kik.sendImage(jid, stkrPath)
+```
+`allowForwarding`: Not implemented because forwarding stickers 
+cause the user forwarding the stickers' kik to crash.
+
+`allowSaving`: Not implemented because sticker do not provide
+ a download option.
 
 returns a promise, make sure to use this inside an async function with the await keyword
 

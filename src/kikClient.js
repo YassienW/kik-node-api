@@ -3,6 +3,7 @@ const EventEmitter = require("events"),
     DataHandler = require("./handlers/dataHandler"),
     Logger = require("./logger"),
     ImageManager = require("./imgManager"),
+    StickerManager = require("./managers/stickerManager"),
     sessionUtils = require("./sessionUtils"),
     initialRequest = require("./requests/initialRequest"),
     getNode = require("./requests/getNode"),
@@ -17,7 +18,8 @@ const EventEmitter = require("events"),
     setGroupMember = require("./requests/setGroupMember"),
     setGroupName = require("./requests/setGroupName"),
     setProfileName = require("./requests/setProfileName"),
-    sendImage = require("./requests/sendImage");
+    sendImage = require("./requests/sendImage"),
+    sendSticker = require("./requests/sendSticker");
 
 module.exports = class KikClient extends EventEmitter {
     constructor(params){
@@ -82,6 +84,8 @@ module.exports = class KikClient extends EventEmitter {
                 }
                 //we have to initialize imgManager after we have the session node
                 this.imgManager = new ImageManager(this.params.username, this.params.password, this.session.node, true);
+                this.stickerManager = new StickerManager(this.params.username, 
+                    this.params.password, this.session.node, true);
             }
         });
         this.connection.on("data", (data) => {
@@ -140,6 +144,17 @@ module.exports = class KikClient extends EventEmitter {
 
         const image = await this.imgManager.uploadImg(imgPath, this.params.version);
         let req = sendImage(jid, image, jid.endsWith("groups.kik.com"), allowForwarding, allowSaving);
+        this.connection.sendXmlFromJs(req.xml);
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback);
+        }
+    }
+    async sendSticker(jid, imgPath, allowForwarding, allowSaving, callback){
+        this.logger.log("info",
+            `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} image to ${jid} Path: ${imgPath}`);
+
+        const image = await this.stickerManager.uploadImg(imgPath, this.params.version);
+        let req = sendSticker(jid, image, jid.endsWith("groups.kik.com"), allowForwarding, allowSaving);
         this.connection.sendXmlFromJs(req.xml);
         if(callback){
             this.dataHandler.addCallback(req.id, callback);

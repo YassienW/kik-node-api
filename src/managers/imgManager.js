@@ -1,8 +1,8 @@
 const fs = require("fs"),
-    config = require("./config"),
+    config = require("../config"),
     {blockhashData} = require("blockhash"),
-    cryptoUtils = require("./cryptoUtils"),
-    sharp = require("./noSharp"), //removed dependency on native module sharp
+    cryptoUtils = require("../cryptoUtils"),
+    sharp = require("../noSharp"), //removed dependency on native module sharp
     axios = require("axios"),
     https = require("https");
 

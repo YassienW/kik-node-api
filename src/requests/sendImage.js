@@ -43,7 +43,7 @@ module.exports = (jid, image, isGroup, allowForwarding = true, allowSaving = tru
                             _text: image.size
                         },
                         "allow-forward": {
-                            _text: allowForwarding
+                            _text: true
                         },
                         "disallow-save": {
                             _text: !allowSaving

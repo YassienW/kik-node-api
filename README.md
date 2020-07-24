@@ -43,6 +43,7 @@ npm i kik-node-api
     * [Received JID Info](#received-jid-info)
 2. [Group Events](#group-events)
     * [Received Group Message](#received-group-message)
+    * [Received Group System Message](#received-group-system-message)
     * [Received Group Image](#received-group-image)
     * [Received Group Sticker](#received-group-sticker)
     * [Group Is Typing](#group-is-typing)
@@ -50,6 +51,7 @@ npm i kik-node-api
     * [User Joined Group](#user-joined-group)
 3. [Private Events](#private-events)
     * [Received Private Message](#received-private-message)
+    * [Received Private System Message](#received-private-system-message)
     * [Received Private Image](#received-private-image)
     * [Received Private Sticker](#received-private-sticker)
     * [Private Is Typing](#private-is-typing)
@@ -186,6 +188,19 @@ Kik.on("receivedgroupmsg", (group, sender, msg) => {
 
 `msg`: the received message
 
+##### Received Group System Message
+
+```javascript
+Kik.on("receivedgroupsysmsg", (group, sender, sysmsg) => {
+    console.log(`Received system message from ${sender.jid} in group ${group.jid}`)
+})
+```
+`group`: a [`group`](#getting-started) object representing the group where the message was sent
+
+`sender`: a [`user`](#getting-started) object representing the message sender, included sended becausse modded users can spoof system messages
+
+`sysmsg`: the received system message
+
 ##### Received Group Image
 
 ```javascript
@@ -267,6 +282,17 @@ Kik.on("receivedprivatemsg", (sender, msg) => {
 `sender`: a [`user`](#getting-started) object representing the message sender
 
 `msg`: the received message
+
+##### Received Private System Message
+
+```javascript
+Kik.on("receivedprivatesysmsg", (sender, sysmsg) => {
+    console.log(`Received message from ${sender.jid}`)
+})
+```
+`sender`: a [`user`](#getting-started) object representing the message sender, included sended becausse modded users can spoof system messages
+
+`sysmsg`: the received system message
 
 ##### Received Private Image
 

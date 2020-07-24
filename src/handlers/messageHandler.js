@@ -28,6 +28,8 @@ module.exports = (client, callbacks, id, data) => {
 
         if (data.find("body")) {
             client.emit("receivedgroupmsg", group, user, data.find("body").text);
+        } else if (data.find("sysmsg")) {
+            client.emit("receivedgroupsysmsg", group, user, data.find("sysmsg").text);
         } else if (data.find("is-typing")) {
             client.emit("grouptyping", group, user, data.find("is-typing").attrs.val === "true");
         } else if (data.find("images") && data.find("file-url")) { //solved crashes when sent cards
@@ -95,6 +97,8 @@ module.exports = (client, callbacks, id, data) => {
             //safetynet message
         } else if (data.find("body")) {
             client.emit("receivedprivatemsg", user, data.find("body").text);
+        } else  if (data.find("sysmsg")) {
+            client.emit("receivedprivatesysmsg", user, data.find("sysmsg").text);
         } else if (type === "is-typing") {
             client.emit("privatetyping", user, data.find("is-typing").attrs.val === "true");
         } else if (data.find("images") && data.find("file-url")) { //resolved crashes when sent cards

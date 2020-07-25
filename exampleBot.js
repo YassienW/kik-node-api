@@ -1,4 +1,4 @@
-const KikClient = require("./src/kikClient");
+const KikClient = require("kik-node-api");
 
 const Kik = new KikClient({
     username: "username",

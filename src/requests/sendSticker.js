@@ -1,6 +1,6 @@
 const crypto = require("../cryptoUtils");
 
-module.exports = (jid, image, isGroup) => {
+module.exports = (jid, image, allowForwarding = true, isGroup) => {
     const timestamp = new Date().getTime(), id = crypto.generateUUID();
     const type = (isGroup? "groupchat" : "chat");
 
@@ -41,7 +41,7 @@ module.exports = (jid, image, isGroup) => {
                             _text: "photo"
                         },
                         "allow-forward": {
-                            _text: false //forwarding stickers crashes kik
+                            _text: allowForwarding
                         }
                     },
                     extras: {

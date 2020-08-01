@@ -17,7 +17,7 @@ A chatting API for kik built with Node.js, based on <https://github.com/tomer800
 
 **To Do's**
 
-1. Add video(gif) and ~~sticker~~ support
+1. Add ~~video(gif)~~ and ~~sticker~~ support
 2. add change profile picture functionality
 3. ~~fix group picture message sending (maybe), possibly a # group related issue (unconfirmed).~~
 
@@ -54,6 +54,8 @@ npm i kik-node-api
     * [Received Private System Message](#received-private-system-message)
     * [Received Private Image](#received-private-image)
     * [Received Private Sticker](#received-private-sticker)
+    * [Received Private Video](#received-private-video)
+    * [Received Private Gif](#received-private-gif)
     * [Private Is Typing](#private-is-typing)
 
 ##### Requests
@@ -61,6 +63,7 @@ npm i kik-node-api
 1. [Common Requests](#common-requests)
     * [Send Message](#send-message)
     * [Send Image](#send-image)
+    * [Send Video](#send-video)
     * [Send Sticker](#send-sticker)
 2. [Group Requests](#group-requests)
     * [Kick/Add](#kickadd)
@@ -227,6 +230,31 @@ Kik.on("receivedgroupsticker", (group, sender, sticker) => {
 
 `sticker`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the image
 
+##### Received Group Video
+
+```javascript
+Kik.on("receivedgroupvid", (group, sender, vid) => {
+    console.log(`Received Video from ${sender.jid} in group ${group.jid}`)
+})
+```
+`group`: a [`group`](#getting-started) object representing the group where the message was sent
+
+`sender`: a [`user`](#getting-started) object representing the message sender
+
+`vid`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the video
+
+##### Received Group Gif
+
+```javascript
+Kik.on("receivedgroupgif", (group, sender, gif) => {
+    console.log(`Received Gif from ${sender.jid} in group ${group.jid}`)
+})
+```
+`group`: a [`group`](#getting-started) object representing the group where the message was sent
+
+`sender`: a [`user`](#getting-started) object representing the message sender
+
+`gif`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the gif video
 
 ##### Group is Typing
 
@@ -314,7 +342,29 @@ Kik.on("receivedprivatesticker", (sender, sticker) => {
 ```
 `sender`: a [`user`](#getting-started) object representing the message sender
 
-`sticker`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the image
+`sticker`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the sticker image
+
+##### Received Private Video
+
+```javascript
+Kik.on("receivedprivatevid", (sender, vid) => {
+    console.log(`Received Video from ${sender.jid}`)
+})
+```
+`sender`: a [`user`](#getting-started) object representing the message sender
+
+`vid`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the video
+
+##### Received Private Gif
+
+```javascript
+Kik.on("receivedprivategif", (sender, gif) => {
+    console.log(`Received Gif from ${sender.jid}`)
+})
+```
+`sender`: a [`user`](#getting-started) object representing the message sender
+
+`gif`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the gif video
 
 ##### Private Is Typing
 
@@ -366,13 +416,43 @@ receiver a download option. true by default
 
 returns a promise, make sure to use this inside an async function with the await keyword
 
+##### Send Video
+
+`Buffer variant`
+```javascript
+Kik.sendImage(jid, vid, img, allowForwarding, allowSaving, autoplay, loop, callback)
+```
+
+`String variant`
+```javascript
+Kik.sendImage(jid, vid, allowForwarding, allowSaving, autoplay, loop, callback)
+```
+
+`vid`: MP4 buffer object or url path string, the source video input, please avoid uploading videos longer than 5 minutes. if buffer is passed an image must be passed. required.
+
+`img`: Image buffer objector url path string, if false this video will not give the 
+receiver a download option. skipped a defailt previw image will be used [placeholder](https://github.com/nanofuxion/kik-node-api/src/ffmpegSwitch.js#L4)
+
+`allowForwarding`: boolean, if false this video will not give the 
+receiver a forwarding option. true by default
+
+`allowSaving`: boolean, if false this video will not give the 
+receiver a download option. true by default
+
+`autoplay`: boolean, if true this video will play automatically 
+upon loading. true by default
+
+`loop`: boolean, if true this video will loop when played. true by default
+
+returns a promise, make sure to use this inside an async function with the await keyword
+
 ##### Send Sticker
 
 ```javascript
 Kik.sendImage(jid, stkrPath)
 ```
-`allowForwarding`: Not implemented because forwarding stickers 
-cause the user forwarding the stickers' kik to crash.
+`allowForwarding`: boolean, if false this image will not give the 
+receiver a forwarding option. true by default
 
 `allowSaving`: Not implemented because sticker do not provide
  a download option.

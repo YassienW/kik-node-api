@@ -3,6 +3,7 @@ const EventEmitter = require("events"),
     DataHandler = require("./handlers/dataHandler"),
     Logger = require("./logger"),
     ImageManager = require("./managers/imgManager"),
+    VideoManager = require("./managers/vidManager"),
     StickerManager = require("./managers/stickerManager"),
     sessionUtils = require("./sessionUtils"),
     initialRequest = require("./requests/initialRequest"),
@@ -10,6 +11,7 @@ const EventEmitter = require("events"),
     auth = require("./requests/auth"),
     getRoster = require("./requests/getRoster"),
     sendChatMessage = require("./requests/sendChatMessage"),
+    sendSysMsg = require("./requests/sendChatSysMsg"),
     getJidInfo = require("./requests/getJidInfo"),
     removeFriend = require("./requests/removeFriend"),
     addFriend = require("./requests/addFriend"),
@@ -19,6 +21,7 @@ const EventEmitter = require("events"),
     setGroupName = require("./requests/setGroupName"),
     setProfileName = require("./requests/setProfileName"),
     sendImage = require("./requests/sendImage"),
+    sendVideo = require("./requests/sendVideo"),
     sendSticker = require("./requests/sendSticker");
 
 module.exports = class KikClient extends EventEmitter {
@@ -67,9 +70,6 @@ module.exports = class KikClient extends EventEmitter {
             }
         });
     }
-    setVersion(versionNumb = 15) { //version change function
-        global.versionNumb = versionNumb;
-    }
     connect(){
         this.connection = new KikConnection(this.logger, err => {
             if(err){
@@ -84,6 +84,7 @@ module.exports = class KikClient extends EventEmitter {
                 }
                 //we have to initialize imgManager after we have the session node
                 this.imgManager = new ImageManager(this.params.username, this.params.password, this.session.node, true);
+                this.vidManager = new VideoManager(this.params.username, this.params.password, this.session.node, true);
                 this.stickerManager = new StickerManager(this.params.username, 
                     this.params.password, this.session.node, true);
             }
@@ -137,6 +138,15 @@ module.exports = class KikClient extends EventEmitter {
         if(callback){
             this.dataHandler.addCallback(req.id, callback);
         }
+    }    
+    sendSysMsg(jid, msg, callback){
+        this.logger.log("info",
+            `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} message to ${jid} Content: ${msg}`);
+        let req = sendSysMsg(jid, msg, jid.endsWith("groups.kik.com"));
+        this.connection.sendXmlFromJs(req.xml);
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback);
+        }
     }
     async sendImage(jid, imgPath, allowForwarding, allowSaving, callback){
         this.logger.log("info",
@@ -144,6 +154,23 @@ module.exports = class KikClient extends EventEmitter {
 
         const image = await this.imgManager.uploadImg(imgPath, this.params.version);
         let req = sendImage(jid, image, jid.endsWith("groups.kik.com"), allowForwarding, allowSaving);
+        this.connection.sendXmlFromJs(req.xml);
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback);
+        }
+    }
+    async sendVideo(jid, vidPath, imgPath, allowForwarding, allowSaving, autoplay, loop, callback){
+        //allow skipping path if using a url instead of ffmpeg buffer
+        if (!Buffer.isBuffer(vidPath)){
+            loop = callback;  autoplay = loop;  allowSaving = autoplay; 
+            allowForwarding = allowSaving; imgPath = allowForwarding;
+        }
+        this.logger.log("info",
+            `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} video to ${jid} Path: 
+                ${!(Buffer.isBuffer(vidPath))? vidPath: "is Buffer"}`);
+
+        const video = await this.vidManager.uploadVid(vidPath, this.params.version, this.logger, imgPath);
+        let req = sendVideo(jid, video, jid.endsWith("groups.kik.com"), allowForwarding, allowSaving, autoplay, loop);
         this.connection.sendXmlFromJs(req.xml);
         if(callback){
             this.dataHandler.addCallback(req.id, callback);

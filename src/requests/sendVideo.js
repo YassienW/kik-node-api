@@ -1,6 +1,6 @@
 const crypto = require("../cryptoUtils");
 
-module.exports = (jid, image, isGroup, allowForwarding = true, allowSaving = true) => {
+module.exports = (jid, video, isGroup, allowForwarding = true, allowSaving = true, autoPlay = true, loop = true) => {
     const timestamp = new Date().getTime(), id = crypto.generateUUID();
     const type = (isGroup? "groupchat" : "chat");
 
@@ -31,7 +31,7 @@ module.exports = (jid, image, isGroup, allowForwarding = true, allowSaving = tru
                 },
                 content: {
                     _attributes: {
-                        id: image.contentId,
+                        id: video.contentId,
                         v: "2",
                         "app-id": "com.kik.ext.gallery"
                     },
@@ -40,35 +40,54 @@ module.exports = (jid, image, isGroup, allowForwarding = true, allowSaving = tru
                             _text: "Gallery"
                         },
                         "file-size": {
-                            _text: image.size
+                            _text: video.size
+                        },
+                        "layout": {
+                            _text: "video"
+                        },
+                        "duration": {
+                            _text: ""
                         },
                         "allow-forward": {
                             _text: allowForwarding
+                        },
+                        "video-should-autoplay": {
+                            _text: autoPlay
+                        },
+                        "video-should-loop": {
+                            _text: loop
                         },
                         "disallow-save": {
                             _text: !allowSaving
                         },
                         "file-content-type": {
-                            _text: "image/jpeg"
+                            _text: "video/mp4"
                         },
                         "file-name": {
-                            _text: `${image.contentId}.jpg`
-                        }
+                            _text: `${video.contentId}.mp4`
+                        },
+                        // "file-url": {
+                        //     _text: video.respUrl
+                        // }
+                    },
+                    extras: {
+                        "key": "needstranscoding",
+                        "val": "false"
                     },
                     hashes: {
                         "sha1-original": {
-                            _text: image.sha1
+                            _text: video.sha1
                         },
                         "sha1-scaled": {
-                            _text: image.previewSha1
+                            _text: video.previewSha1
                         },
                         "blockhash-scaled": {
-                            _text: image.previewBlockhash
+                            _text: video.previewBlockhash
                         }
                     },
                     images: {
                         preview: {
-                            _text: image.previewBase64
+                            _text: video.previewBase64
                         }
                     }
                 }

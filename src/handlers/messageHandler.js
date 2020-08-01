@@ -32,6 +32,11 @@ module.exports = (client, callbacks, id, data) => {
             client.emit("receivedgroupsysmsg", group, user, data.find("sysmsg").text);
         } else if (data.find("is-typing")) {
             client.emit("grouptyping", group, user, data.find("is-typing").attrs.val === "true");
+        } else if (data.find("duration") && data.find("file-url")) { 
+            client.emit("receivedgroupvid", group, user, client.vidManager.getVid(data.find("file-url").text, false));  
+        } else if (data.find("video-should-autoplay") && data.find("uris")) { 
+            client.emit("receivedgroupgif", group, user, client.vidManager.getGif(
+                data.find("uris").contents[0].contents[0]._text, false));  
         } else if (data.find("images") && data.find("file-url")) { //solved crashes when sent cards
             client.emit("receivedgroupimg", group, user, client.imgManager.getImg(data.find("file-url").text, false));
         } else if (data.find("png-preview") && data.find("uris")) { //solved crashes when sent cards
@@ -101,6 +106,11 @@ module.exports = (client, callbacks, id, data) => {
             client.emit("receivedprivatesysmsg", user, data.find("sysmsg").text);
         } else if (type === "is-typing") {
             client.emit("privatetyping", user, data.find("is-typing").attrs.val === "true");
+        } else if (data.find("duration") && data.find("file-url")) { 
+            client.emit("receivedprivatevid", user, client.vidManager.getVid(data.find("file-url").text, true));  
+        } else if (data.find("video-should-autoplay") && data.find("uris")) { 
+            client.emit("receivedprivategif", user, client.vidManager.getGif(
+                data.find("uris").contents[0].contents[0]._text, true));     
         } else if (data.find("images") && data.find("file-url")) { //resolved crashes when sent cards
             client.emit("receivedprivateimg", user, client.imgManager.getImg(data.find("file-url").text, true));
         } else if (data.find("png-preview") && data.find("uris")) { //solved crashes when sent cards

@@ -23,17 +23,20 @@ class KikConnection extends EventEmitter{
         this.socket.on("error", err => {
             callback(err);
         });
+        this.packets = []; //create packets array as in this outside socket.on "data" 
         this.socket.on("data", data => {
-            //apparently this is the max length we can receive in one packet, we have to combine it with the next packet
-            //before passing it to the client, to make sure it is a full message, note this ONLY works if the packet
-            //is split to 2, 3 would break
-            if(data.length >= 16384){
-                this.prevPacket = data;
-            }else{
-                let fullPacket = data;
-                if(this.prevPacket){
-                    fullPacket = this.prevPacket + fullPacket;
-                    this.prevPacket = null;
+            //fixed 2 packet limitation
+            if(data.length >= 16384){ //keep adding the packets to an array until a packets is smaller than 16384
+                this.packets.push(data);
+            }else{ //combine the  packet array and the last packet
+                let fullPacket;
+                let lastPacket = data;
+                if(this.packets.length > 0){
+                    fullPacket = this.packets.join("") + lastPacket;
+                    this.packets = [];
+                } else{  // if no packets were added to the array assign last packet as full packet
+                    fullPacket = lastPacket;
+                    this.packets = [];
                 }
                 this.emit("data", new JSSoup(fullPacket));
                 this.logger.log("raw", `Received data (${fullPacket.length}): ${fullPacket}`);

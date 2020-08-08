@@ -88,10 +88,13 @@ class VideoManager {
     }
     //2nd param is used for determining which folder to save in
     getVid(url, isPrivate){
+        const agent = new https.Agent({  
+            rejectUnauthorized: false
+        });
         //first request returns a 302 with a url
-        https.get(url, (res) => {
+        https.get(url, { httpsAgent: agent }, (res) => {
             //second req returns the actual image
-            https.get(res.headers.location, (res) => {
+            https.get(res.headers.location, { httpsAgent: agent }, (res) => {
                 let dataArr = [];
 
                 res.on("data", (data) => {
@@ -112,19 +115,19 @@ class VideoManager {
                 });
 
             }).on("error", (err) => {
-                console.log("Error downloading image:");
+                console.log("Error downloading video:");
                 console.log(err);
             });
 
         }).on("error", (err) => {
-            console.log("Error downloading image:");
+            console.log("Error downloading video:");
             console.log(err);
         });
     }
 
     getGif(url, isPrivate){
-        //second req returns the actual image
-        https.get(url, (res) => {
+        //hotfix for http video links
+        axios.get(url, (res) => {
             let dataArr = [];
 
             res.on("data", (data) => {
@@ -144,10 +147,11 @@ class VideoManager {
                 return buffer;
             });
 
-        }).on("error", (err) => {
-            console.log("Error downloading image:");
-            console.log(err);
-        });
+        }); 
+        // .on("error", (err) => {
+        //     console.log("Error downloading gif:");
+        //     console.log(err);
+        // });
     }
 
     

@@ -9,17 +9,18 @@ A chatting API for kik built with Node.js, based on <https://github.com/tomer800
 
 **Modificcations**
 
-1. removed dependency on native module sharp allowing for use in containers such as glitch.com
+1. Removed dependency on native module sharp allowing for use in containers such as glitch.com
 2. ~~Lazy~~ slightly improved fix for crash caused by groups not providing username ".text"
 3. Coincidentally added the ability to load images directly from URLs in the process of removing dependency on sharp.
-4. added kik version changer, review [config.js](./src/config.js) to see exact versions
-5. added support for sending and receiving stickers, with help from Vilppu on kik.
+4. Added kik version changer, review [config.js](./src/config.js) to see exact versions
+5. Added support for sending and receiving stickers, with help from Vilppu on kik.
+6. Added support for sending and receiving system messages.
+6. Added support for sending and receiving videos(gifs)
+7. Fixed 2 packet limitation in [kikConnection.js](./src/kikConnection.js)
 
 **To Do's**
-
-1. Add ~~video(gif)~~ and ~~sticker~~ support
-2. add change profile picture functionality
-3. ~~fix group picture message sending (maybe), possibly a # group related issue (unconfirmed).~~
+1. Add change profile picture and background functionality
+2. Official kikbots reply options menu support.
 
 ## Installation
 This module is far from production ready please use the original modules that his on NPM: kik-node-api as shown below

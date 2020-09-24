@@ -1,6 +1,6 @@
-const crypto = require("../cryptoUtils");
+const crypto = require("../../cryptoUtils");
 
-module.exports = (oldPassword, newPassword) => {
+module.exports = (newEmail, password) => {
     return({
         iq: {
             _attributes: {
@@ -9,13 +9,13 @@ module.exports = (oldPassword, newPassword) => {
             },
             query: {
                 _attributes: {
-                    xmlns: "kik:iq:user-profile"
+                    xmlns: "kik:iq:user-account"
+                },
+                "email": {
+                    _text: newEmail
                 },
                 "passkey-e": {
-                    _text: oldPassword
-                },
-                "passkey-u": {
-                    _text: newPassword
+                    _text: password
                 }
             }
         }

@@ -1,6 +1,7 @@
-const crypto = require("../cryptoUtils");
+const crypto = require("../../cryptoUtils");
 
-module.exports = (groupJid, name) => {
+//true bans, false unbans
+module.exports = (groupJid, userJid, bool) => {
     return({
         iq: {
             _attributes: {
@@ -15,8 +16,11 @@ module.exports = (groupJid, name) => {
                     _attributes: {
                         jid: groupJid
                     },
-                    n: {
-                        _text: name
+                    b: {
+                        _attributes: {
+                            r: (bool? null: "1")
+                        },
+                        _text: userJid
                     }
                 }
             }

@@ -17,7 +17,8 @@ const EventEmitter = require("events"),
     setGroupMember = require("./requests/setGroupMember"),
     setGroupName = require("./requests/setGroupName"),
     setProfileName = require("./requests/setProfileName"),
-    sendImage = require("./requests/sendImage");
+    sendImage = require("./requests/sendImage"),
+    leaveGroup = require("./requests/leaveGroup");
 
 module.exports = class KikClient extends EventEmitter {
     constructor(params){
@@ -174,6 +175,10 @@ module.exports = class KikClient extends EventEmitter {
     setProfileName(firstName, lastName){
         this.logger.log("info", `Setting profile name to ${firstName} ${lastName}`);
         this.connection.sendXmlFromJs(setProfileName(firstName, lastName));
+    }
+    leaveGroup(groupJid){
+        this.logger.log("info", `Leaving group ${groupJid}`);
+        this.connection.sendXmlFromJs(leaveGroup(groupJid));
     }
 };
 

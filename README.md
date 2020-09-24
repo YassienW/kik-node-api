@@ -45,6 +45,7 @@ npm i kik-node-api
     * [Send Message](#send-message)
     * [Send Image](#send-image)
 2. [Group Requests](#group-requests)
+    * [Leave Group](#leave-group)
     * [Kick/Add](#kickadd)
     * [Promote/Demote](#promotedemote)
     * [Ban/Unban](#banunban)
@@ -309,6 +310,12 @@ Kik.removeFriend(jid)
 ```
 
 #### Group Requests
+##### Leave Group
+
+```javascript
+Kik.leaveGroup(groupJid)
+```
+
 ##### Kick/Add
 
 ```javascript

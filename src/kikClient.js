@@ -18,7 +18,9 @@ const EventEmitter = require("events"),
     setGroupName = require("./requests/setGroupName"),
     setProfileName = require("./requests/setProfileName"),
     sendImage = require("./requests/sendImage"),
-    leaveGroup = require("./requests/leaveGroup");
+    leaveGroup = require("./requests/leaveGroup"),
+    setEmail = require("./requests/setEmail"),
+    setPassword = require("./requests/setPassword");
 
 module.exports = class KikClient extends EventEmitter {
     constructor(params){
@@ -179,6 +181,14 @@ module.exports = class KikClient extends EventEmitter {
     leaveGroup(groupJid){
         this.logger.log("info", `Leaving group ${groupJid}`);
         this.connection.sendXmlFromJs(leaveGroup(groupJid));
+    }
+    setEmail(newEmail, password){
+        this.logger.log("info", `Setting email to ${newEmail}`);
+        this.connection.sendXmlFromJs(setEmail(newEmail, password));
+    }
+    setPassword(oldPassword, newPassword){
+        this.logger.log("info", "Setting password");
+        this.connection.sendXmlFromJs(setPassword(oldPassword, newPassword));
     }
 };
 

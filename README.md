@@ -50,8 +50,10 @@ npm i kik-node-api
     * [Promote/Demote](#promotedemote)
     * [Ban/Unban](#banunban)
     * [Change Group Name](#change-group-name)
-3. [Private Requests](#private-requests)
+3. [Profile Requests](#profile-requests)
     * [Set Profile Name](#set-profile-name)
+    * [Set Email](#set-email)
+    * [Set Password](#set-password)
 ---
 
 ### Getting Started
@@ -340,11 +342,23 @@ Kik.setBanned(groupJid, userJid, bool)
 Kik.setGroupName(groupJid, name)
 ```
 
-#### Private Requests
+#### Profile Requests
 ##### Set Profile Name
 
 ```javascript
 Kik.setProfileName(firstName, lastName)
+```
+
+##### Set Email
+
+```javascript
+Kik.setEmail(newEmail, password)
+```
+
+##### Set Password
+
+```javascript
+Kik.setPassword(newPassword, oldPassword)
 ```
 
 ## License

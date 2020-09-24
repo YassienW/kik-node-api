@@ -292,6 +292,18 @@ Kik.sendImage(jid, imgPath, allowForwarding)
 `allowForwarding`: boolean, if false this image will not give the 
 receiver a forwarding option. true by default
 
+##### Add Friend
+
+```javascript
+Kik.addFriend(jid)
+```
+
+##### Remove Friend
+
+```javascript
+Kik.removeFriend(jid)
+```
+
 #### Group Requests
 ##### Kick/Add
 

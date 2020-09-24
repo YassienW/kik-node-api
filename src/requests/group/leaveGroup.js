@@ -1,7 +1,7 @@
-const crypto = require("../cryptoUtils");
+const crypto = require("../../cryptoUtils");
 
 //you must use the raw jid here
-module.exports = (jid) => {
+module.exports = (groupJid) => {
     return({
         iq: {
             _attributes: {
@@ -10,12 +10,13 @@ module.exports = (jid) => {
             },
             query: {
                 _attributes: {
-                    xmlns: "kik:iq:friend"
+                    xmlns: "kik:groups:admin"
                 },
-                remove: {
+                g: {
                     _attributes: {
-                        jid: jid
-                    }
+                        jid: groupJid
+                    },
+                    l: {}
                 }
             },
         }

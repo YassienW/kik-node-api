@@ -7,17 +7,20 @@ const EventEmitter = require("events"),
     initialRequest = require("./requests/initialRequest"),
     getNode = require("./requests/getNode"),
     auth = require("./requests/auth"),
-    getRoster = require("./requests/getRoster"),
+    getRoster = require("./requests/account/getRoster"),
     sendChatMessage = require("./requests/sendChatMessage"),
     getJidInfo = require("./requests/getJidInfo"),
-    removeFriend = require("./requests/removeFriend"),
-    addFriend = require("./requests/addFriend"),
-    setAdmin = require("./requests/setAdmin"),
-    setBanned = require("./requests/setBanned"),
-    setGroupMember = require("./requests/setGroupMember"),
-    setGroupName = require("./requests/setGroupName"),
-    setProfileName = require("./requests/setProfileName"),
-    sendImage = require("./requests/sendImage");
+    removeFriend = require("./requests/account/removeFriend"),
+    addFriend = require("./requests/account/addFriend"),
+    setAdmin = require("./requests/group/setAdmin"),
+    setBanned = require("./requests/group/setBanned"),
+    setGroupMember = require("./requests/group/setGroupMember"),
+    setGroupName = require("./requests/group/setGroupName"),
+    setProfileName = require("./requests/account/setProfileName"),
+    sendImage = require("./requests/sendImage"),
+    leaveGroup = require("./requests/group/leaveGroup"),
+    setEmail = require("./requests/account/setEmail"),
+    setPassword = require("./requests/account/setPassword");
 
 module.exports = class KikClient extends EventEmitter {
     constructor(params){
@@ -177,6 +180,18 @@ module.exports = class KikClient extends EventEmitter {
     setProfileName(firstName, lastName){
         this.logger.log("info", `Setting profile name to ${firstName} ${lastName}`);
         this.connection.sendXmlFromJs(setProfileName(firstName, lastName));
+    }
+    leaveGroup(groupJid){
+        this.logger.log("info", `Leaving group ${groupJid}`);
+        this.connection.sendXmlFromJs(leaveGroup(groupJid));
+    }
+    setEmail(newEmail, password){
+        this.logger.log("info", `Setting email to ${newEmail}`);
+        this.connection.sendXmlFromJs(setEmail(newEmail, password));
+    }
+    setPassword(oldPassword, newPassword){
+        this.logger.log("info", "Setting password");
+        this.connection.sendXmlFromJs(setPassword(oldPassword, newPassword));
     }
 };
 

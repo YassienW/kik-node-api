@@ -7,6 +7,8 @@ A chatting API for kik built with Node.js, based on <https://github.com/tomer800
 ![npm](https://img.shields.io/npm/v/kik-node-api.svg?style=plastic)
 ![npm](https://img.shields.io/npm/dt/kik-node-api.svg?style=plastic)
 
+Join the group chat on kik #kiknodeapi
+
 ## Installation
 
 NPM:
@@ -43,12 +45,15 @@ npm i kik-node-api
     * [Send Message](#send-message)
     * [Send Image](#send-image)
 2. [Group Requests](#group-requests)
+    * [Leave Group](#leave-group)
     * [Kick/Add](#kickadd)
     * [Promote/Demote](#promotedemote)
     * [Ban/Unban](#banunban)
     * [Change Group Name](#change-group-name)
-3. [Private Requests](#private-requests)
+3. [Profile Requests](#profile-requests)
     * [Set Profile Name](#set-profile-name)
+    * [Set Email](#set-email)
+    * [Set Password](#set-password)
 ---
 
 ### Getting Started
@@ -90,11 +95,15 @@ user: {
 ```
 groups are represented in the following js object:
 ```
-group: { 
-    jid: "1100221067977_g@groups.kik.com", 
+group: {
+    jid: "1100221067977_g@groups.kik.com",
     code: "#kikbotapi",
     name: "Kik Bot API Unofficial",
-    users: ["jid1", "jid2", "jid3"]
+    users: [
+        {jid: "jid1", isOwner: true, isAdmin: true},
+        {jid: "jid2", isAdmin: true},
+        {jid: "jid3"}
+    ]
 }
 ```
 private groups have a code of null
@@ -295,7 +304,25 @@ receiver a download option. true by default
 
 returns a promise, make sure to use this inside an async function with the await keyword
 
+##### Add Friend
+
+```javascript
+Kik.addFriend(jid)
+```
+
+##### Remove Friend
+
+```javascript
+Kik.removeFriend(jid)
+```
+
 #### Group Requests
+##### Leave Group
+
+```javascript
+Kik.leaveGroup(groupJid)
+```
+
 ##### Kick/Add
 
 ```javascript
@@ -320,11 +347,23 @@ Kik.setBanned(groupJid, userJid, bool)
 Kik.setGroupName(groupJid, name)
 ```
 
-#### Private Requests
+#### Profile Requests
 ##### Set Profile Name
 
 ```javascript
 Kik.setProfileName(firstName, lastName)
+```
+
+##### Set Email
+
+```javascript
+Kik.setEmail(newEmail, password)
+```
+
+##### Set Password
+
+```javascript
+Kik.setPassword(newPassword, oldPassword)
 ```
 
 ## License

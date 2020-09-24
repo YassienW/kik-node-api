@@ -1,6 +1,7 @@
-const crypto = require("../cryptoUtils");
+const crypto = require("../../cryptoUtils");
 
-//true bans, false unbans
+//true adds user, false removes him
+//note that you can only add a user using his raw JID
 module.exports = (groupJid, userJid, bool) => {
     return({
         iq: {
@@ -16,7 +17,7 @@ module.exports = (groupJid, userJid, bool) => {
                     _attributes: {
                         jid: groupJid
                     },
-                    b: {
+                    m: {
                         _attributes: {
                             r: (bool? null: "1")
                         },

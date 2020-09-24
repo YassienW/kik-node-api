@@ -23,7 +23,14 @@ module.exports = (client, callbacks, id, data) => {
         data.findAll("g").forEach(group => {
             let users = [];
             group.findAll("m").forEach((user) => {
-                users.push(user.text);
+                const userObj = {jid: user.text};
+                if(user.attrs.s){
+                    userObj.isOwner = true;
+                }
+                if(user.attrs.a){
+                    userObj.isAdmin = true;
+                }
+                users.push(userObj);
             });
             groups.push({
                 jid: group.attrs.jid,

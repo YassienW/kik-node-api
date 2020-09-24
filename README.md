@@ -92,11 +92,15 @@ user: {
 ```
 groups are represented in the following js object:
 ```
-group: { 
-    jid: "1100221067977_g@groups.kik.com", 
+group: {
+    jid: "1100221067977_g@groups.kik.com",
     code: "#kikbotapi",
     name: "Kik Bot API Unofficial",
-    users: ["jid1", "jid2", "jid3"]
+    users: [
+        {jid: "jid1", isOwner: true, isAdmin: true},
+        {jid: "jid2", isAdmin: true},
+        {jid: "jid3"}
+    ]
 }
 ```
 private groups have a code of null

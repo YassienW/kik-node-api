@@ -25,7 +25,7 @@ module.exports = (client, callbacks, id, data) => {
         }else if(data.find("is-typing")){
             client.emit("grouptyping", group, user, data.find("is-typing").attrs.val === "true");
         }else if(data.find("images")){
-            client.emit("receivedgroupimg", group, user, client.imgManager.getImg(data.find("file-url").text, false));
+            client.emit("receivedgroupimg", group, user, client.imgManager.getImg(data.find("file-url").text, false, group.jid));
         }else if(data.find("status")){
             let status = data.find("status");
             //user's jid is in the status here, if it wasn't set, set it
@@ -80,7 +80,7 @@ module.exports = (client, callbacks, id, data) => {
         }else if(type === "is-typing"){
             client.emit("privatetyping", user, data.find("is-typing").attrs.val === "true");
         }else if(data.find("images")){
-            client.emit("receivedprivateimg", user, client.imgManager.getImg(data.find("file-url").text, true));
+            client.emit("receivedprivateimg", user, client.imgManager.getImg(data.find("file-url").text, true, user.jid));
         }
     }else if(type === "receipt"){
         let receipt = data.find("receipt").attrs.type;

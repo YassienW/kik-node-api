@@ -65,8 +65,7 @@ class ImageManager {
         await axios.put(url, buffer, {headers});
         return {contentId, size, sha1, previewSha1, previewBlockhash, previewBase64};
     }
-    //2nd param is used for determining which folder to save in
-    getImg(url, isPrivate){
+    getImg(url, isPrivate, source){
         //first request returns a 302 with a url
         https.get(url, (res) => {
             //second req returns the actual image
@@ -81,11 +80,19 @@ class ImageManager {
                     let date = new Date().toISOString().substring(0, 10);
 
                     if(this.saveImages){
+                        let imageDirectory = `./images/${this.username}`;
+
                         if(isPrivate){
-                            fs.writeFileSync(`./images/${this.username}/private/${date}_${Date.now()}.jpeg`, buffer);
+                            imageDirectory += "/private";
                         }else{
-                            fs.writeFileSync(`./images/${this.username}/groups/${date}_${Date.now()}.jpeg`, buffer);
+                            imageDirectory += "/groups";
                         }
+                        imageDirectory += `/${source}`;
+                        //make sure the directory exists, if not create it
+                        if(!fs.existsSync(imageDirectory)){
+                            fs.mkdirSync(imageDirectory);
+                        }
+                        fs.writeFileSync(`${imageDirectory}/${date}_${Date.now()}.jpeg`, buffer);
                     }
                     return buffer;
                 });

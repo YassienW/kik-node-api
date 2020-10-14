@@ -23,21 +23,48 @@ class KikConnection extends EventEmitter{
         this.socket.on("error", err => {
             callback(err);
         });
+        this.packets = [];
         this.socket.on("data", data => {
             //apparently this is the max length we can receive in one packet, we have to combine it with the next packet
             //before passing it to the client, to make sure it is a full message, note this ONLY works if the packet
             //is split to 2, 3 would break
+
+            // packets =  [data[s:s+16384].encode() for s in range(0, len(data), 16384)]
+            //return list(packets)
+            
             if(data.length >= 16384){
-                this.prevPacket = data;
+                // this.prevPacket = data;
+                this.packets.push(data);
             }else{
-                let fullPacket = data;
-                if(this.prevPacket){
-                    fullPacket = this.prevPacket + fullPacket;
-                    this.prevPacket = null;
+                let fullPacket;
+                let lastPacket = data;
+                if(this.packets.length > 0){
+                    fullPacket = this.packets.join("") + lastPacket;
+                    this.packets = [];
+                    // console.log("its a big packet");
+                    // console.log(fullPacket);
+                } else{
+                    fullPacket = lastPacket;
+                    this.packets = [];
                 }
+                // let fullPacket = data;
+
                 this.emit("data", new JSSoup(fullPacket));
                 this.logger.log("raw", `Received data (${fullPacket.length}): ${fullPacket}`);
             }
+
+            //old method 
+            // if(data.length >= 16384){
+            //     this.prevPacket = data;
+            // }else{
+            //     let fullPacket = data;
+            //     if(this.prevPacket){
+            //         fullPacket = this.prevPacket + fullPacket;
+            //         this.prevPacket = null;
+            //     }
+            //     this.emit("data", new JSSoup(fullPacket));
+            //     this.logger.log("raw", `Received data (${fullPacket.length}): ${fullPacket}`);
+            // }
         });
     }
     disconnect(){

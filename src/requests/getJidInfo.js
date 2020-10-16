@@ -9,7 +9,8 @@ module.exports = (jids) => {
     jids.forEach((jid) => {
         items.push({
             "_attributes": {
-                jid: jid
+                //fixed bug causing peers to populate as undefined objests
+                jid: jid.jid 
             }
         });
     });

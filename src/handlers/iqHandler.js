@@ -1,6 +1,15 @@
 module.exports = (client, callbacks, id, data) => {
     let xmlns = data.find("query").attrs.xmlns;
 
+    //get undefined subvales without error
+    function getSafe(fn, defaultVal) {
+        try {
+            return fn();
+        } catch (e) {
+            return defaultVal;
+        }
+    }
+
     if(xmlns === "jabber:iq:register"){
         if(data.find("node")){
             client.setNode(data.find("node").text);
@@ -49,10 +58,16 @@ module.exports = (client, callbacks, id, data) => {
     }else if(xmlns === "kik:iq:friend:batch"){
         let users = [];
         data.findAll("item").forEach(user => {
+            //fixed "(user.find("username").t͟e͟x͟t͟ does not exist)" bug 
             users.push({
                 jid: user.attrs.jid,
-                username: user.find("username").text === "Username unavailable"? null : user.find("username").text,
-                displayName: user.find("display-name").text,
+                // username: typeof (user.find("username").text) === "undefined" ? null : user.find("username").text,
+                username: getSafe(() => user.find("username").text) === "Username unavailable" ? 
+                    "Username unavailable" : getSafe(() => user.find("username").text) === undefined ? 
+                        null : getSafe(() => user.find("username").text),
+                // displayName: user.find("display-name").text,
+                displayName: getSafe(() => user.find("display-name").text) != 
+                    undefined ? user.find("display-name").text : null,
                 //sometimes, when you are the user there is no pic (maybe there are other cases idk)
                 pic: user.find("pic") ? user.find("pic").text : null
             });

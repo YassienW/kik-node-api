@@ -1,4 +1,4 @@
-const protoObjects = require("../protobuf/protobufParser");
+const protobuf = require("../protobuf/protobufParser");
 
 module.exports = (client, callbacks, id, data) => {
     const query = data.find("query");
@@ -73,6 +73,57 @@ module.exports = (client, callbacks, id, data) => {
         if(callback){
             callback(users);
             callbacks.delete(id);
+        }
+    }else if(xmlns === "kik:iq:xiphias:bridge"){
+        const method = query.attrs.method;
+
+        if(method.startsWith("GetUsers")){
+            const {users, payloads} = protobuf.lookupType(`${method}Response`)
+                .decode(Buffer.from(data.find("body").text, "base64"));
+
+            let parsedUsers;
+            if(users){
+                parsedUsers = users
+                    .map(({ backgroundProfilePicExtension, registrationElement, kinUserIdElement }) => ({
+                        kinUserId: kinUserIdElement.kinUserId.id,
+                        registrationTimestamp: registrationElement.creationDate.seconds.low,
+                        backgroundPic: backgroundProfilePicExtension &&
+                            backgroundProfilePicExtension.extensionDetail.pic
+                    }));
+            }else if(payloads){
+                parsedUsers = payloads
+                    .map(({ publicGroupMemberProfile }) => ({
+                        displayName: publicGroupMemberProfile.displayName &&
+                            publicGroupMemberProfile.displayName.displayName,
+                        kinUserId: publicGroupMemberProfile.kinUserIdElement.kinUserId.id,
+                        registrationTimestamp: publicGroupMemberProfile.registrationElement.creationDate.seconds.low,
+                    }));
+            }
+
+            let callback = callbacks.get(id);
+            if(callback){
+                callback(parsedUsers);
+                callbacks.delete(id);
+            }
+        }else if(method === "FindGroups"){
+            const parsedGroups = protobuf.lookupType("FindGroupsResponse")
+                .decode(Buffer.from(data.find("body").text, "base64")).match
+                .map(({jid, displayData, groupJoinToken, memberCount}) => {
+                    const base64JoinToken = groupJoinToken.token.toString("base64");
+                    return {
+                        jid: `${jid.localPart}@groups.kik.com`,
+                        code: displayData.hashtag,
+                        name: displayData.displayName,
+                        joinToken: base64JoinToken.endsWith("=")?
+                            base64JoinToken.slice(0, base64JoinToken.indexOf("=")): base64JoinToken,
+                        memberCount,
+                    };
+                });
+            let callback = callbacks.get(id);
+            if(callback){
+                callback(parsedGroups);
+                callbacks.delete(id);
+            }
         }
     }
 };

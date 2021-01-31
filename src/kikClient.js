@@ -10,6 +10,7 @@ const EventEmitter = require("events"),
     getRoster = require("./requests/account/getRoster"),
     sendChatMessage = require("./requests/sendChatMessage"),
     getUserInfo = require("./requests/getUserInfo"),
+    getXiphiasUserInfo = require("./requests/getXiphiasUserInfo"),
     removeFriend = require("./requests/account/removeFriend"),
     addFriend = require("./requests/account/addFriend"),
     setAdmin = require("./requests/group/setAdmin"),
@@ -145,9 +146,18 @@ module.exports = class KikClient extends EventEmitter {
             this.dataHandler.addCallback(req.id, callback);
         }
     }
-    getUserInfo(usernamesOrJids, callback){
-        this.logger.log("info", `Requesting user info for ${usernamesOrJids}`);
-        let req = getUserInfo(usernamesOrJids);
+    getUserInfo(usernamesOrJids, useXiphias, callback){
+        this.logger.log("info", `Requesting ${useXiphias && "Xiphias"} user info for ${usernamesOrJids}`);
+
+        if(!Array.isArray(usernamesOrJids)){
+            usernamesOrJids = [usernamesOrJids];
+        }
+        let req;
+        if(useXiphias){
+            req = getXiphiasUserInfo(usernamesOrJids);
+        }else{
+            req = getUserInfo(usernamesOrJids);
+        }
         this.connection.sendXmlFromJs(req.xml);
         if(callback){
             this.dataHandler.addCallback(req.id, callback);

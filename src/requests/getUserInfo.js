@@ -1,11 +1,8 @@
 const crypto = require("../cryptoUtils");
 
-//array of jids/usernames, or one jid/username string
+//array of jids/usernames
 module.exports = (usernamesOrJids) => {
     const id = crypto.generateUUID();
-    if(!Array.isArray(usernamesOrJids)){
-        usernamesOrJids = [usernamesOrJids];
-    }
     const items = usernamesOrJids.map((usernameOrJid) => ({
         "_attributes": {
             [usernameOrJid.includes("@")? "jid" : "username"]: usernameOrJid

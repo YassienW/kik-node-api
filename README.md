@@ -42,7 +42,7 @@ npm i kik-node-api
 ##### Requests
 
 1. [Common Requests](#common-requests)
-    * [Get User Info (Search users)](#get-user-info)
+    * [Get User Info](#get-user-info)
     * [Send Message](#send-message)
     * [Send Image](#send-image)
 2. [Group Requests](#group-requests)
@@ -276,18 +276,32 @@ Note that all callback functions can be excluded
 
 #### Common Requests
 
-##### Get User Info (Search users)
+##### Get User Info
 
 This function can be used to search users by username
 
 ```javascript
-Kik.getUserInfo(usernamesOrJids, (users) => {
+Kik.getUserInfo(usernamesOrJids, useXiphias, (users) => {
     
 });
 ```
 
 `usernamesOrJids`: a single username or a single jid string.
 Also accepts an array of jid strings or username strings
+
+`useXiphias`: if true will use the xiphias endpoint. 
+This endpoint accepts jids only and returns different data
+
+|                       | useXiphias = true | useXiphias = false |
+| ---                   | :---:     | :---: |
+| username              | ❌     | ✔️ |
+| displayName           | ✔️     | ✔️ |
+| profilePic            | ❌     | ✔️ |
+| backgroundPic         | ✔️     | ❌ |
+| registrationTimestamp | ✔️     | ❌ |
+| kinId                 | ✔️     | ❌ |
+
+note that some data will only be returned if you're chatting with a user
 
 returns an array of [`user`](#getting-started) objects,
 or an empty array if no results are found

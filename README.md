@@ -42,6 +42,7 @@ npm i kik-node-api
 ##### Requests
 
 1. [Common Requests](#common-requests)
+    * [Get User Info (Search users)](#get-user-info)
     * [Send Message](#send-message)
     * [Send Image](#send-image)
 2. [Group Requests](#group-requests)
@@ -275,10 +276,26 @@ Note that all callback functions can be excluded
 
 #### Common Requests
 
-You can provide a group's or a user's jid, they will automatically use 
-the appropriate format
+##### Get User Info (Search users)
+
+This function can be used to search users by username
+
+```javascript
+Kik.getUserInfo(usernamesOrJids, (users) => {
+    
+});
+```
+
+`usernamesOrJids`: a single username or a single jid string.
+Also accepts an array of jid strings or username strings
+
+returns an array of [`user`](#getting-started) objects,
+or an empty array if no results are found
 
 ##### Send Message
+
+You can provide a group's or a user's jid, they will automatically use
+the appropriate format
 
 ```javascript
 Kik.sendMessage(jid, msg, (delivered, read) => {
@@ -291,6 +308,9 @@ Kik.sendMessage(jid, msg, (delivered, read) => {
 ```
 
 ##### Send Image
+
+You can provide a group's or a user's jid, they will automatically use
+the appropriate format
 
 ```javascript
 Kik.sendImage(jid, imgPath, allowForwarding, allowSaving)

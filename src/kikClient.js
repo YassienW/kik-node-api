@@ -9,7 +9,7 @@ const EventEmitter = require("events"),
     auth = require("./requests/auth"),
     getRoster = require("./requests/account/getRoster"),
     sendChatMessage = require("./requests/sendChatMessage"),
-    getJidInfo = require("./requests/getJidInfo"),
+    getUserInfo = require("./requests/getUserInfo"),
     removeFriend = require("./requests/account/removeFriend"),
     addFriend = require("./requests/account/addFriend"),
     setAdmin = require("./requests/group/setAdmin"),
@@ -40,7 +40,7 @@ module.exports = class KikClient extends EventEmitter {
             if(this.params.trackUserInfo){
                 //perhaps i could combine and send to make it more efficient, depending on the rate limit
                 this.groups.forEach((group) => {
-                    this.getJidInfo(group.users);
+                    this.getUserInfo(group.users);
                 });
             }
             if(this.params.trackFriendInfo){
@@ -145,9 +145,9 @@ module.exports = class KikClient extends EventEmitter {
             this.dataHandler.addCallback(req.id, callback);
         }
     }
-    getJidInfo(jids, callback){
-        this.logger.log("info", `Requesting JID info for ${jids}`);
-        let req = getJidInfo(jids);
+    getUserInfo(usernamesOrJids, callback){
+        this.logger.log("info", `Requesting user info for ${usernamesOrJids}`);
+        let req = getUserInfo(usernamesOrJids);
         this.connection.sendXmlFromJs(req.xml);
         if(callback){
             this.dataHandler.addCallback(req.id, callback);

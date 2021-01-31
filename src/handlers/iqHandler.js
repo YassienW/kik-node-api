@@ -1,5 +1,11 @@
+const protoObjects = require("../protobuf/protobufParser");
+
 module.exports = (client, callbacks, id, data) => {
-    let xmlns = data.find("query").attrs.xmlns;
+    const query = data.find("query");
+    if(!query){
+        return;
+    }
+    const xmlns = query.attrs.xmlns;
 
     if(xmlns === "jabber:iq:register"){
         if(data.find("node")){
@@ -46,17 +52,21 @@ module.exports = (client, callbacks, id, data) => {
             callback(groups, friends);
             callbacks.delete(id);
         }
-    }else if(xmlns === "kik:iq:friend:batch"){
+    }else if(xmlns.startsWith("kik:iq:friend")){
         let users = [];
-        data.findAll("item").forEach(user => {
-            users.push({
+        //handle empty results
+        const error = data.find("error");
+        if(error && error.attrs.code === "404"){
+            //no results
+        }else{
+            users = data.findAll("item").map(user => ({
                 jid: user.attrs.jid,
                 username: user.find("username").text === "Username unavailable"? null : user.find("username").text,
                 displayName: user.find("display-name").text,
                 //sometimes, when you are the user there is no pic (maybe there are other cases idk)
                 pic: user.find("pic") ? user.find("pic").text : null
-            });
-        });
+            }));
+        }
         //trigger event and send callback if registered
         client.emit("receivedjidinfo", users);
         let callback = callbacks.get(id);

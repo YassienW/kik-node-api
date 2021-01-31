@@ -39,7 +39,7 @@ module.exports = (client, callbacks, id, data) => {
                 let invitedBy = (status.text.includes("invited")? status.text.split("by")[1].trim() : null);
 
                 if(client.params.trackUserInfo){
-                    client.getUserInfo(status.attrs.jid,(users) => {
+                    client.getUserInfo(status.attrs.jid, false,(users) => {
                         client.emit("userjoinedgroup", group, users[0], invitedBy);
                     });
                 }else{

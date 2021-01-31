@@ -21,7 +21,9 @@ const EventEmitter = require("events"),
     sendImage = require("./requests/sendImage"),
     leaveGroup = require("./requests/group/leaveGroup"),
     setEmail = require("./requests/account/setEmail"),
-    setPassword = require("./requests/account/setPassword");
+    setPassword = require("./requests/account/setPassword"),
+    searchGroups = require("./requests/group/searchGroups"),
+    joinGroup = require("./requests/group/joinGroup");
 
 module.exports = class KikClient extends EventEmitter {
     constructor(params){
@@ -202,6 +204,18 @@ module.exports = class KikClient extends EventEmitter {
     setPassword(oldPassword, newPassword){
         this.logger.log("info", "Setting password");
         this.connection.sendXmlFromJs(setPassword(oldPassword, newPassword));
+    }
+    searchGroups(searchQuery, callback){
+        this.logger.log("info", `Searching groups with term ${searchQuery}`);
+        let req = searchGroups(searchQuery);
+        this.connection.sendXmlFromJs(req.xml);
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback);
+        }
+    }
+    joinGroup(groupJid, groupCode, joinToken){
+        this.logger.log("info", `Joining group ${groupCode}`);
+        this.connection.sendXmlFromJs(joinGroup(groupJid, groupCode, joinToken));
     }
 };
 

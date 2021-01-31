@@ -46,6 +46,8 @@ npm i kik-node-api
     * [Send Message](#send-message)
     * [Send Image](#send-image)
 2. [Group Requests](#group-requests)
+    * [Search Groups](#search-groups)
+    * [Join Group](#join-group)
     * [Leave Group](#leave-group)
     * [Kick/Add](#kickadd)
     * [Promote/Demote](#promotedemote)
@@ -351,6 +353,24 @@ Kik.removeFriend(jid)
 ```
 
 #### Group Requests
+
+##### Search Groups
+
+```javascript
+Kik.searchGroups(searchQuery, (groups) => {
+    
+})
+```
+`groups`: an array of [`group`](#getting-started) objects representing the search results, 
+the group objects here have a special `joinToken` variable used for
+joining the group
+
+##### Join Group
+
+```javascript
+Kik.joinGroup(groupJid, groupCode, joinToken)
+```
+
 ##### Leave Group
 
 ```javascript

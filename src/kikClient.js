@@ -149,7 +149,7 @@ module.exports = class KikClient extends EventEmitter {
         }
     }
     getUserInfo(usernamesOrJids, useXiphias, callback){
-        this.logger.log("info", `Requesting ${useXiphias && "Xiphias"} user info for ${usernamesOrJids}`);
+        this.logger.log("info", `Requesting user info with Xiphias = ${useXiphias} for ${usernamesOrJids}`);
 
         if(!Array.isArray(usernamesOrJids)){
             usernamesOrJids = [usernamesOrJids];

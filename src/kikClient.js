@@ -43,7 +43,7 @@ module.exports = class KikClient extends EventEmitter {
             if(this.params.trackUserInfo){
                 //perhaps i could combine and send to make it more efficient, depending on the rate limit
                 this.groups.forEach((group) => {
-                    this.getUserInfo(group.users, false);
+                    this.getUserInfo(group.users.map(({ jid }) => jid), false);
                 });
             }
             if(this.params.trackFriendInfo){

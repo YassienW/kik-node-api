@@ -28,8 +28,7 @@ module.exports = (client, callbacks, id, data) => {
             client.emit("receivedgroupimg", group, user, client.imgManager.getImg(data.find("file-url").text, false, group.jid));
         }else if(data.find("status")){
             let status = data.find("status");
-            //user's jid is in the status here, if it wasn't set, set it
-            user = (user.jid? user : {...user, jid: status.attrs.jid});
+            user.jid = status.attrs.jid;
 
             if(status.text.includes("left") || status.text.includes("removed")){
                 let kickedBy = (status.text.includes("removed")? status.text.split("has")[0].trim() : null);

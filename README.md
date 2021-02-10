@@ -42,6 +42,7 @@ npm i kik-node-api
 ##### Requests
 
 1. [Common Requests](#common-requests)
+    * [Get Roster](#get-roster)
     * [Get User Info](#get-user-info)
     * [Send Message](#send-message)
     * [Send Image](#send-image)
@@ -277,6 +278,14 @@ Kik.on("privatetyping", (sender, isTyping) => {
 Note that all callback functions can be excluded
 
 #### Common Requests
+
+##### Get Roster
+
+```javascript
+Kik.getRoster((groups, friends) => {
+    
+});
+```
 
 ##### Get User Info
 

@@ -1,4 +1,5 @@
-const EventEmitter = require("events"),
+const axios = require('axios'),
+	EventEmitter = require("events"),
     KikConnection = require("./kikConnection"),
     DataHandler = require("./handlers/dataHandler"),
     Logger = require("./logger"),
@@ -23,7 +24,8 @@ const EventEmitter = require("events"),
     setEmail = require("./requests/account/setEmail"),
     setPassword = require("./requests/account/setPassword"),
     searchGroups = require("./requests/group/searchGroups"),
-    joinGroup = require("./requests/group/joinGroup");
+    joinGroup = require("./requests/group/joinGroup"),
+    addToGroup = require("./requests/group/addToGroup");
 
 module.exports = class KikClient extends EventEmitter {
     constructor(params){
@@ -148,6 +150,14 @@ module.exports = class KikClient extends EventEmitter {
             this.dataHandler.addCallback(req.id, callback);
         }
     }
+	getInfoFromUsername(username){
+		const url = `https://ws2.kik.com/user/${username}`;
+		axios(url).then(response => {
+			const htmlToObj = response.data;
+			return htmlToObj;
+		}).catch();
+		return null;
+	}
     getUserInfo(usernamesOrJids, useXiphias, callback){
         this.logger.log("info", `Requesting user info with Xiphias = ${useXiphias} for ${usernamesOrJids}`);
 
@@ -167,11 +177,11 @@ module.exports = class KikClient extends EventEmitter {
     }
     addFriend(jid){
         this.logger.log("info", `Adding friend with JID ${jid}`);
-        this.connection.sendXmlFromJs(addFriend(jid));
+        this.connection.sendXmlFromJs(addFriend(jid)); this.getRoster();
     }
     removeFriend(jid){
         this.logger.log("info", `Removing friend with JID ${jid}`);
-        this.connection.sendXmlFromJs(removeFriend(jid));
+        this.connection.sendXmlFromJs(removeFriend(jid)); this.getRoster();
     }
     setAdmin(groupJid, userJid, bool){
         this.logger.log("info", `Setting admin = ${bool} for jid ${userJid} in group ${groupJid}`);
@@ -216,6 +226,10 @@ module.exports = class KikClient extends EventEmitter {
     joinGroup(groupJid, groupCode, joinToken){
         this.logger.log("info", `Joining group ${groupCode}`);
         this.connection.sendXmlFromJs(joinGroup(groupJid, groupCode, joinToken));
+    }
+    addToGroup(groupJid, userJid){
+        this.logger.log("info", `Adding ${userJid} to group ${groupJid}`);
+        this.connection.sendXmlFromJs(addToGroup(groupJid, userJid));
     }
 };
 

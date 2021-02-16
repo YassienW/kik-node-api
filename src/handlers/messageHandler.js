@@ -45,6 +45,21 @@ module.exports = (client, callbacks, id, data) => {
                     client.emit("userjoinedgroup", group, user, invitedBy);
                 }
             }
+        }else if(data.find("sysmsg")) {
+            if(dataStr.includes("</pic>") && dataStr.includes("</g>") && dataStr.includes("</n>")){
+                try{
+                    let str2 = () => {
+                        var str1 = data.toString();
+                        str1 = str1.includes("<b>")? str1.replace(str1.split('</pic>')[0], '').replace('</pic>', '')
+                            .replace(str1.split('<b>')[1], '').replace('<b>', '') : str1;
+                        str1 = str1.includes("</m>")? str1.split('</m>').join('</m>, ').replace(/,\s*$/, "") : str1;
+                        return str1;
+                    };
+                    client.emit("joinedgroup", group, str2(), data.find("sysmsg").text);
+                }catch(e){}
+            }else{
+                client.emit("receivedgroupsysmsg", group, user, data.find("sysmsg")? data.find("sysmsg").text : null);
+            }
         }
     }else if(type === "chat" || type === "is-typing"){
         let jid = data.find("message").attrs.from;
@@ -80,6 +95,10 @@ module.exports = (client, callbacks, id, data) => {
             client.emit("privatetyping", user, data.find("is-typing").attrs.val === "true");
         }else if(data.find("images")){
             client.emit("receivedprivateimg", user, client.imgManager.getImg(data.find("file-url").text, true, user.jid));
+        }else if(data.toString().includes("inline-username-search")){
+            client.emit("receivedprivatefriendsearch", user);
+        }else if(data.toString().includes("username-mention")){
+            client.emit("receivedprivatefriendmention", user);
         }
     }else if(type === "receipt"){
         let receipt = data.find("receipt").attrs.type;

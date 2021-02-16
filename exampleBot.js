@@ -50,8 +50,21 @@ Kik.on("userjoinedgroup", (group, user, invitedBy) => {
     //kicking anyone once they join
     Kik.setGroupMember(group.jid, user.jid, false)
 });
+Kik.on("receivedgroupsysmsg", (group, sender, sysmsg) => {
+    console.log(`recived sysmsg from ${sender.jid} msg ${sysmsg}`);
+});
+Kik.on(`joinedgroup`, (group, users, msg) => {
+    console.log(`Joined group ${group.jid} msg ${msg}`);
+});
+    
 
 /*PRIVATE EVENTS*/
+Kik.on(`receivedprivatefriendsearch`, (sender) => {
+    console.log(`${sender.jid} has searched added me`);
+});
+Kik.on(`receivedprivatefriendmention`, (sender) => {
+    console.log(`${sender.jid} has mentioned added me`);
+});
 Kik.on("receivedprivatemsg", async (sender, msg) => {
     await Kik.sendImage(sender.jid, "path/to/img.png", false, false);
     Kik.sendMessage(sender.jid, msg, (delivered, read) => {

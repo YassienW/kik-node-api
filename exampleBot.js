@@ -33,6 +33,21 @@ Kik.on("receivedjidinfo", (users) => {
 Kik.on("receivedgroupmsg", (group, sender, msg) => {
     console.log(`GROUP:${group.code}: [${sender.displayName}]: ${msg}`)
 });
+Kik.on("receivedgroupimg", (group, sender, img) => {
+    console.log(`${sender.displayName} sent an image`)
+});
+Kik.on("receivedgroupvid", (group, sender, vid) => {
+    console.log(`${sender.displayName} sent a video`)
+});
+Kik.on("receivedgroupgif", (group, sender, gif) => {
+    console.log(`${sender.displayName} sent a gif`)
+});
+Kik.on("receivedgroupsticker", (group, sender, sticker) => {
+    console.log(`${sender.displayName} sent a sticker`)
+});
+Kik.on("receivedgroupsysmsg", (group, sender, sysmsg) => {
+    console.log(`${sender.displayName} sent a sysmsg: ${sysmsg}`)
+});
 Kik.on("grouptyping", (group, sender, isTyping) => {
     if(isTyping){
         console.log(`GROUP:${group.code}: ${sender.displayName} is typing...`)
@@ -49,9 +64,6 @@ Kik.on("userjoinedgroup", (group, user, invitedBy) => {
     console.log(`GROUP:${group.code}: ${user.displayName} joined the group`);
     //kicking anyone once they join
     Kik.setGroupMember(group.jid, user.jid, false)
-});
-Kik.on("receivedgroupsysmsg", (group, sender, sysmsg) => {
-    console.log(`recived sysmsg from ${sender.jid} msg ${sysmsg}`);
 });
 Kik.on(`joinedgroup`, (group, users, msg) => {
     console.log(`Joined group ${group.jid} msg ${msg}`);
@@ -76,7 +88,22 @@ Kik.on("receivedprivatemsg", async (sender, msg) => {
     });
     console.log(`PRIVATE: [${sender.displayName}]: ${msg}`)
 });
-Kik.on("privatetyping", (sender, isTyping) => {
+Kik.on("receivedprivateimg", (sender, img) => {
+    console.log(`${sender.displayName} sent an image`)
+});
+Kik.on("receivedprivatevid", (sender, vid) => {
+    console.log(`${sender.displayName} sent a video`)
+});
+Kik.on("receivedprivategif", (sender, gif) => {
+    console.log(`${sender.displayName} sent a gif`)
+});
+Kik.on("receivedprivatesticker", (sender, sticker) => {
+    console.log(`${sender.displayName} sent a sticker`)
+});
+Kik.on("receivedprivatesysmsg", (sender, sysmsg) => {
+    console.log(`${sender.displayName} sent a sysmsg: ${sysmsg}`)
+});
+Kik.on("receivedprivatetyping", (sender, isTyping) => {
     if(isTyping){
         console.log(`PRIVATE: ${sender.jid} is typing`)
     }else{

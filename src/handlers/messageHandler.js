@@ -1,8 +1,11 @@
 module.exports = (client, callbacks, id, data) => {
     let type = data.find("message").attrs.type;
+    let dataStr = data.toString();
 
     if(type === "groupchat"){
-        let group = client.groups.find((group) => {return group.jid === data.find("g").attrs.jid;});
+        let group = client.groups.find((group) => {
+            return group.jid === data.find("g").attrs.jid;
+        });
         let user = {
             jid: data.find("message").attrs.from,
             username: null,
@@ -12,11 +15,15 @@ module.exports = (client, callbacks, id, data) => {
 
         //status message froms contain the group JID not the user JID, ignore them
         if(client.params.trackUserInfo && !data.find("status")){
-            let userSearch = client.users.find((user) => {return user.jid === data.find("message").attrs.from;});
+            let userSearch = client.users.find((user) => {
+                return user.jid === data.find("message").attrs.from;
+            });
             user = (userSearch? userSearch : user);
         }
         if(client.params.trackFriendInfo && !data.find("status")){
-            let userSearch = client.friends.find((user) => {return user.jid === data.find("message").attrs.from;});
+            let userSearch = client.friends.find((user) => {
+                return user.jid === data.find("message").attrs.from;
+            });
             user = (userSearch? userSearch : user);
         }
 
@@ -24,11 +31,20 @@ module.exports = (client, callbacks, id, data) => {
             client.emit("receivedgroupmsg", group, user, data.find("body").text);
         }else if(data.find("is-typing")){
             client.emit("grouptyping", group, user, data.find("is-typing").attrs.val === "true");
+        }else if(data.find("duration") && data.find("file-url")) { 
+            client.emit("receivedgroupvid", group, user, client.vidManager.getVid(data.find("file-url").text, false));  
+        }else if(data.find("video-should-autoplay") && data.find("uris")) { 
+            client.emit("receivedgroupgif", group, user, client.vidManager.getGif(
+                data.find("uris").contents[0].contents[0]._text, false));  
         }else if(data.find("images")){
             client.emit("receivedgroupimg", group, user, client.imgManager.getImg(data.find("file-url").text, false, group.jid));
+        }else if(data.find("png-preview") && data.find("uris")) { //solved crashes when sent cards
+            //eslint-disable-next-line max-len
+            client.emit("receivedgroupsticker", group, user, client.stickerManager.getImg(data.find("png-preview").text, false));
         }else if(data.find("status")){
             let status = data.find("status");
-            user.jid = status.attrs.jid;
+            //user's jid is in the status here, if it wasn't set, set it
+            user = (user.jid? user : {...user, jid: status.attrs.jid});
 
             if(status.text.includes("left") || status.text.includes("removed")){
                 let kickedBy = (status.text.includes("removed")? status.text.split("has")[0].trim() : null);
@@ -55,7 +71,7 @@ module.exports = (client, callbacks, id, data) => {
                         str1 = str1.includes("</m>")? str1.split('</m>').join('</m>, ').replace(/,\s*$/, "") : str1;
                         return str1;
                     };
-                    client.emit("joinedgroup", group, str2(), data.find("sysmsg").text);
+                    client.emit("joinedgroup", group, data.find("sysmsg").text, str2());
                 }catch(e){}
             }else{
                 client.emit("receivedgroupsysmsg", group, user, data.find("sysmsg")? data.find("sysmsg").text : null);
@@ -89,16 +105,37 @@ module.exports = (client, callbacks, id, data) => {
 
         if(data.find("xiphias-mobileremote-call")){
             //safetynet message
+        }else if(dataStr.includes("inline-username-search")){
+            client.emit("receivedprivatefriendsearch", user);
+        }else if(dataStr.includes("username-mention")){
+            client.emit("receivedprivatefriendmention", user);
+        }else if(data.find("body")){
+            client.emit("receivedprivatemsg", user, data.find("body").text);
+        }else if(data.find("sysmsg")) {
+            client.emit("receivedprivatesysmsg", user, data.find("sysmsg")? data.find("sysmsg").text : null);
+        }else if(type === "is-typing"){
+            client.emit("receivedprivatetyping", user, data.find("is-typing").attrs.val === "true");
+        }else if(data.find("duration") && data.find("file-url")) { 
+            client.emit("receivedprivatevid", user, client.vidManager.getVid(data.find("file-url").text, true));  
+        }else if(data.find("video-should-autoplay") && data.find("uris")) { 
+            client.emit("receivedprivategif", user, client.vidManager.getGif(data.find("uris").contents[0].contents[0]._text, true));     
+        }else if(data.find("images")){
+            client.emit("receivedprivateimg", user, client.imgManager.getImg(data.find("file-url").text, true, user.jid));
+        }else if(data.find("png-preview") && data.find("uris")) { //solved crashes when sent cards
+            //eslint-disable-next-line max-len
+            client.emit("receivedprivatesticker", user, client.stickerManager.getImg(data.find("png-preview").text, true));
+        }
+        
+        else if(dataStr.includes("inline-username-search")){
+            client.emit("receivedprivatefriendsearch", user);
+        }else if(dataStr.includes("username-mention")){
+            client.emit("receivedprivatefriendmention", user);
         }else if(data.find("body")){
             client.emit("receivedprivatemsg", user, data.find("body").text);
         }else if(type === "is-typing"){
             client.emit("privatetyping", user, data.find("is-typing").attrs.val === "true");
         }else if(data.find("images")){
             client.emit("receivedprivateimg", user, client.imgManager.getImg(data.find("file-url").text, true, user.jid));
-        }else if(data.toString().includes("inline-username-search")){
-            client.emit("receivedprivatefriendsearch", user);
-        }else if(data.toString().includes("username-mention")){
-            client.emit("receivedprivatefriendmention", user);
         }
     }else if(type === "receipt"){
         let receipt = data.find("receipt").attrs.type;

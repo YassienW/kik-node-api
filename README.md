@@ -30,13 +30,22 @@ npm i kik-node-api
     * [Received JID Info](#received-jid-info)
 2. [Group Events](#group-events)
     * [Received Group Message](#received-group-message)
-    * [Received Group Image](#received-group-image)
+* [Received Group Image](#received-group-image)
+    * [Received Group Video](#received-group-video)
+    * [Received Group Gif](#received-group-gif)
+    * [Received Group Sticker](#received-group-sticker)
+    * [Received Group Sysmsg](#received-group-sysmsg)
     * [Group Is Typing](#group-is-typing)
     * [User Left Group](#user-left-group)
     * [User Joined Group](#user-joined-group)
+    * [Joined Group](#joined-group)
 3. [Private Events](#private-events)
     * [Received Private Message](#received-private-message)
     * [Received Private Image](#received-private-image)
+    * [Received Private Video](#received-private-video)
+    * [Received Private Gif](#received-private-gif)
+    * [Received Private Sticker](#received-private-sticker)
+    * [Received Private Sysmsg](#received-private-sysmsg)
     * [Private Is Typing](#private-is-typing)
 
 ##### Requests
@@ -280,17 +289,19 @@ Note that all callback functions can be excluded
 #### Common Requests
 
 ##### Get Roster
-
 ```javascript
 Kik.getRoster((groups, friends) => {
     
 });
 ```
 
+##### Get Info from Username
+```javascript
+console.log(Kik.getInfoFromUsername(username))
+```
+
 ##### Get User Info
-
 This function can be used to search users by username
-
 ```javascript
 Kik.getUserInfo(usernamesOrJids, useXiphias, (users) => {
     
@@ -378,6 +389,11 @@ joining the group
 
 ```javascript
 Kik.joinGroup(groupJid, groupCode, joinToken)
+```
+
+##### Add User to Group
+```javascript
+Kik.addToGroup(groupJid, userJid)
 ```
 
 ##### Leave Group

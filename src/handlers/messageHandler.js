@@ -30,7 +30,7 @@ module.exports = (client, callbacks, id, data) => {
         if(data.find("body")){
             client.emit("receivedgroupmsg", group, user, data.find("body").text);
         }else if(data.find("is-typing")){
-            client.emit("grouptyping", group, user, data.find("is-typing").attrs.val === "true");
+            client.emit("recievedgrouptyping", group, user, data.find("is-typing").attrs.val === "true");
         }else if(data.find("duration") && data.find("file-url")) { 
             client.emit("receivedgroupvid", group, user, client.vidManager.getVid(data.find("file-url").text, false));  
         }else if(data.find("video-should-autoplay") && data.find("uris")) { 

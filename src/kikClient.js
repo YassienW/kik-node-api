@@ -232,4 +232,3 @@ module.exports = class KikClient extends EventEmitter {
         this.connection.sendXmlFromJs(addToGroup(groupJid, userJid));
     }
 };
-

@@ -48,7 +48,7 @@ Kik.on("receivedgroupsticker", (group, sender, sticker) => {
 Kik.on("receivedgroupsysmsg", (group, sender, sysmsg) => {
     console.log(`${sender.displayName} sent a sysmsg: ${sysmsg}`)
 });
-Kik.on("grouptyping", (group, sender, isTyping) => {
+Kik.on("recievedgrouptyping", (group, sender, isTyping) => {
     if(isTyping){
         console.log(`GROUP:${group.code}: ${sender.displayName} is typing...`)
     }else{

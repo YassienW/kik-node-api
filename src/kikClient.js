@@ -73,6 +73,8 @@ module.exports = class KikClient extends EventEmitter {
             }
         });
     }
+
+    //#region [Server]
     connect(){
         this.connection = new KikConnection(this.logger, err => {
             if(err){
@@ -80,11 +82,8 @@ module.exports = class KikClient extends EventEmitter {
             }else{
                 //don't read it from file again if it's already set
                 this.session = (this.session? this.session : sessionUtils.getSession(this.params.username));
-                if(this.session.node){
-                    this.authRequest();
-                }else{
-                    this.initiateNodeConnection();
-                }
+                if(this.session.node){ this.authRequest(); }
+                else{ this.initiateNodeConnection(); }
                 //we have to initialize imgManager after we have the session node
                 this.imgManager = new ImageManager(this.params.username, this.params.password, this.session.node, true);
             }
@@ -126,55 +125,11 @@ module.exports = class KikClient extends EventEmitter {
         this.logger.log("info", "Getting roster");
         let req = getRoster();
         this.connection.sendXmlFromJs(req.xml);
-        if(callback){
-            this.dataHandler.addCallback(req.id, callback);
-        }
+        if(callback){ this.dataHandler.addCallback(req.id, callback); }
     }
-    sendMessage(jid, msg, callback){
-        this.logger.log("info",
-            `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} message to ${jid} Content: ${msg}`);
-        let req = sendChatMessage(jid, msg, jid.endsWith("groups.kik.com"));
-        this.connection.sendXmlFromJs(req.xml);
-        if(callback){
-            this.dataHandler.addCallback(req.id, callback);
-        }
-    }
-    async sendImage(jid, imgPath, allowForwarding, allowSaving, callback){
-        this.logger.log("info",
-            `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} image to ${jid} Path: ${imgPath}`);
+    //#endregion
 
-        const image = await this.imgManager.uploadImg(imgPath);
-        let req = sendImage(jid, image, jid.endsWith("groups.kik.com"), allowForwarding, allowSaving);
-        this.connection.sendXmlFromJs(req.xml);
-        if(callback){
-            this.dataHandler.addCallback(req.id, callback);
-        }
-    }
-	getInfoFromUsername(username){
-		const url = `https://ws2.kik.com/user/${username}`;
-		axios(url).then(response => {
-			const htmlToObj = response.data;
-			return htmlToObj;
-		}).catch();
-		return null;
-	}
-    getUserInfo(usernamesOrJids, useXiphias, callback){
-        this.logger.log("info", `Requesting user info with Xiphias = ${useXiphias} for ${usernamesOrJids}`);
-
-        if(!Array.isArray(usernamesOrJids)){
-            usernamesOrJids = [usernamesOrJids];
-        }
-        let req;
-        if(useXiphias){
-            req = getXiphiasUserInfo(usernamesOrJids);
-        }else{
-            req = getUserInfo(usernamesOrJids);
-        }
-        this.connection.sendXmlFromJs(req.xml);
-        if(callback){
-            this.dataHandler.addCallback(req.id, callback);
-        }
-    }
+    //#region [Profile]
     addFriend(jid){
         this.logger.log("info", `Adding friend with JID ${jid}`);
         this.connection.sendXmlFromJs(addFriend(jid)); this.getRoster();
@@ -183,6 +138,21 @@ module.exports = class KikClient extends EventEmitter {
         this.logger.log("info", `Removing friend with JID ${jid}`);
         this.connection.sendXmlFromJs(removeFriend(jid)); this.getRoster();
     }
+    setProfileName(firstName, lastName){
+        this.logger.log("info", `Setting profile name to ${firstName} ${lastName}`);
+        this.connection.sendXmlFromJs(setProfileName(firstName, lastName));
+    }
+    setEmail(newEmail, password){
+        this.logger.log("info", `Setting email to ${newEmail}`);
+        this.connection.sendXmlFromJs(setEmail(newEmail, password));
+    }
+    setPassword(oldPassword, newPassword){
+        this.logger.log("info", "Setting password");
+        this.connection.sendXmlFromJs(setPassword(oldPassword, newPassword));
+    }
+    //#endregion
+
+    //#region [Group]
     setAdmin(groupJid, userJid, bool){
         this.logger.log("info", `Setting admin = ${bool} for jid ${userJid} in group ${groupJid}`);
         this.connection.sendXmlFromJs(setAdmin(groupJid, userJid, bool));
@@ -199,29 +169,15 @@ module.exports = class KikClient extends EventEmitter {
         this.logger.log("info", `Setting group name to ${groupName} for group ${groupJid}`);
         this.connection.sendXmlFromJs(setGroupName(groupJid, groupName));
     }
-    setProfileName(firstName, lastName){
-        this.logger.log("info", `Setting profile name to ${firstName} ${lastName}`);
-        this.connection.sendXmlFromJs(setProfileName(firstName, lastName));
-    }
     leaveGroup(groupJid){
         this.logger.log("info", `Leaving group ${groupJid}`);
         this.connection.sendXmlFromJs(leaveGroup(groupJid));
-    }
-    setEmail(newEmail, password){
-        this.logger.log("info", `Setting email to ${newEmail}`);
-        this.connection.sendXmlFromJs(setEmail(newEmail, password));
-    }
-    setPassword(oldPassword, newPassword){
-        this.logger.log("info", "Setting password");
-        this.connection.sendXmlFromJs(setPassword(oldPassword, newPassword));
     }
     searchGroups(searchQuery, callback){
         this.logger.log("info", `Searching groups with term ${searchQuery}`);
         let req = searchGroups(searchQuery);
         this.connection.sendXmlFromJs(req.xml);
-        if(callback){
-            this.dataHandler.addCallback(req.id, callback);
-        }
+        if(callback){ this.dataHandler.addCallback(req.id, callback); }
     }
     joinGroup(groupJid, groupCode, joinToken){
         this.logger.log("info", `Joining group ${groupCode}`);
@@ -231,4 +187,41 @@ module.exports = class KikClient extends EventEmitter {
         this.logger.log("info", `Adding ${userJid} to group ${groupJid}`);
         this.connection.sendXmlFromJs(addToGroup(groupJid, userJid));
     }
+    //#endregion
+
+    //#region [Group/Private]
+    sendMessage(jid, msg, callback){
+        this.logger.log("info",
+            `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} message to ${jid} Content: ${msg}`);
+        let req = sendChatMessage(jid, msg, jid.endsWith("groups.kik.com"));
+        this.connection.sendXmlFromJs(req.xml);
+        if(callback){ this.dataHandler.addCallback(req.id, callback); }
+    }
+    async sendImage(jid, imgPath, allowForwarding, allowSaving, callback){
+        this.logger.log("info",
+            `Sending ${jid.endsWith("groups.kik.com")? "group" : "private"} image to ${jid} Path: ${imgPath}`);
+
+        const image = await this.imgManager.uploadImg(imgPath);
+        let req = sendImage(jid, image, jid.endsWith("groups.kik.com"), allowForwarding, allowSaving);
+        this.connection.sendXmlFromJs(req.xml);
+        if(callback){ this.dataHandler.addCallback(req.id, callback); }
+    }
+	getInfoFromUsername(username){
+		const url = `https://ws2.kik.com/user/${username}`;
+		axios(url).then(response => {
+			const htmlToObj = response.data;
+			return htmlToObj;
+		}).catch();
+		return null;
+	}
+    getUserInfo(usernamesOrJids, useXiphias, callback){
+        //this.logger.log("info", `Requesting user info with Xiphias = ${useXiphias} for ${usernamesOrJids}`);
+        if(!Array.isArray(usernamesOrJids)){ usernamesOrJids = [usernamesOrJids]; }
+        let req;
+        if(useXiphias){ req = getXiphiasUserInfo(usernamesOrJids); }
+        else{ req = getUserInfo(usernamesOrJids); }
+        this.connection.sendXmlFromJs(req.xml);
+        if(callback){ this.dataHandler.addCallback(req.id, callback); }
+    }
+    //#endregion
 };

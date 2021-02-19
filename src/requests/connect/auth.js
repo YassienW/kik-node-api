@@ -1,5 +1,5 @@
-const config = require("../config"),
-    crypto = require("../cryptoUtils");
+const config = require("../../utility/config"),
+    crypto = require("../../utility/cryptoUtils");
 
 module.exports = (username, password, node, deviceID) => {
     let timestamp = "1496333389122";
@@ -23,4 +23,3 @@ module.exports = (username, password, node, deviceID) => {
         }
     });
 };
-

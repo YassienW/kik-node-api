@@ -1,6 +1,6 @@
 const crypto = require("../utility/cryptoUtils");
 
-module.exports = (jid, image, isGroup, allowForwarding = true, allowSaving = true) => {
+module.exports = (jid, image, allowForwarding = true, isGroup) => {
     const timestamp = new Date().getTime(), id = crypto.generateUUID();
     const type = (isGroup? "groupchat" : "chat");
 
@@ -9,11 +9,9 @@ module.exports = (jid, image, isGroup, allowForwarding = true, allowSaving = tru
         xml: {
             message: {
                 _attributes: {
-                    xmlns: "jabber:client",
                     type: type,
                     to: jid,
                     id: id,
-                    cts: timestamp
                 },
                 kik: {
                     _attributes: {
@@ -33,41 +31,26 @@ module.exports = (jid, image, isGroup, allowForwarding = true, allowSaving = tru
                     _attributes: {
                         id: image.contentId,
                         v: "2",
-                        "app-id": "com.kik.ext.gallery"
+                        "app-id": "com.kik.ext.stickers"
                     },
                     strings: {
                         "app-name": {
-                            _text: "Gallery"
+                            _text: "Stickers"
                         },
-                        "file-size": {
-                            _text: image.size
+                        "layout": {
+                            _text: "photo"
                         },
                         "allow-forward": {
                             _text: allowForwarding
-                        },
-                        "disallow-save": {
-                            _text: !allowSaving
-                        },
-                        "file-content-type": {
-                            _text: "image/jpeg"
-                        },
-                        "file-name": {
-                            _text: `${image.contentId}.jpg`
                         }
                     },
-                    hashes: {
-                        "sha1-original": {
-                            _text: image.sha1
-                        },
-                        "sha1-scaled": {
-                            _text: image.previewSha1
-                        },
-                        "blockhash-scaled": {
-                            _text: image.previewBlockhash
-                        }
+                    extras: {
+                        "key": "sticker_id",
+                        "val": 6680408046960640
                     },
+                    hashes: {},
                     images: {
-                        preview: {
+                        "png-preview": {
                             _text: image.previewBase64
                         }
                     }

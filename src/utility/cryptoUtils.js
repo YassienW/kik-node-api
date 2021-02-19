@@ -4,6 +4,38 @@ const crypto = require("crypto"),
     bigInt = require("big-integer"),
     cryptoUtils = module.exports;
 
+cryptoUtils.isGroup = (jid) => {
+    return String(jid).endsWith("groups.kik.com")? true : false;
+}
+cryptoUtils.jidToUsername = (userJid) => {
+    if(String(userJid).includes(`@talk.kik.com`)){ return String(userJid).substr(String(userJid).length - 17); }
+    return null;
+}
+cryptoUtils.getTimestamp = () => {
+    var d = Math.floor(new Date().getTime('en-US', { timeZone: 'America/Denver' }) / 1000);
+    return d;
+}
+cryptoUtils.timestampToDate = (timestamp) => {
+    var options = {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: "America/Denver"
+    };
+    var d = new Date(timestamp*1000).toLocaleDateString("en-US", options);
+    return d;
+}
+cryptoUtils.getDays = (d1, d2) => {
+    const date1 = new Date(d1),
+        date2 = new Date(d2),
+        diffTime = Math.abs(date2 - date1),
+        diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+}
 cryptoUtils.generatePasskey = (username, password) => {
     let sha1Password = crypto.createHash("sha1").update(password).digest("hex");
     let salt = username.toLowerCase() + "niCRwL7isZHny24qgLvy";
@@ -156,6 +188,3 @@ cryptoUtils.bufferToSha1 = (buffer) => {
 cryptoUtils.bufferToMd5 = (buffer) => {
     return crypto.createHash("md5").update(buffer).digest("hex");
 };
-
-
-

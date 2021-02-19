@@ -1,4 +1,4 @@
-const crypto = require("../cryptoUtils");
+const crypto = require("../utility/cryptoUtils");
 
 module.exports = (jid, msg, isGroup) => {
     let timestamp = new Date().getTime(), id = crypto.generateUUID();

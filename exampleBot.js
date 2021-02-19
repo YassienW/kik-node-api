@@ -8,68 +8,57 @@ const Kik = new KikClient({
     trackFriendInfo: true
 });
 Kik.on("authenticated", () => {
-    //this is not needed since the client grabs roster automatically once authenticated
-/*    Kik.getRoster((groups, friends) => {
-        console.log("We got the roster")
-        console.log(groups)
-        console.log(friends)
-    })*/
 });
 //alternatively you can use this event for roster
 Kik.on("receivedroster", (groups, friends) => {
-    console.log(groups);
-    console.log(friends)
 });
 //alternatively you can use this event for captcha
 Kik.on("receivedcaptcha", (captchaUrl) => {
-    console.log("Please solve captcha" + captchaUrl)
+    console.log("Please solve captcha: " + captchaUrl);
 });
 Kik.on("receivedjidinfo", (users) => {
-    console.log("We got peer info:");
-    console.log(users)
 });
 
-/*GROUP EVENTS*/
-Kik.on("receivedgroupmsg", (group, sender, msg) => {
-    console.log(`GROUP:${group.code}: [${sender.displayName}]: ${msg}`)
+//[GROUP]
+Kik.on(`receivedgroupmsg`, (group, sender, msg) => {
 });
-Kik.on("grouptyping", (group, sender, isTyping) => {
-    if(isTyping){
-        console.log(`GROUP:${group.code}: ${sender.displayName} is typing...`)
-    }else{
-        console.log(`GROUP:${group.code}: ${sender.displayName} stopped typing`)
-    }
+Kik.on("receivedgroupimg", (group, sender, img) => {
 });
-Kik.on("userleftgroup", (group, user, kickedBy) => {
-    console.log(`GROUP:${group.code}: ${user.displayName} left the group`);
-    //ban anyone once they leave
-    Kik.setBanned(group.jid, user.jid, true)
+Kik.on("receivedgroupvid", (group, sender, vid) => {
 });
-Kik.on("userjoinedgroup", (group, user, invitedBy) => {
-    console.log(`GROUP:${group.code}: ${user.displayName} joined the group`);
-    //kicking anyone once they join
-    Kik.setGroupMember(group.jid, user.jid, false)
+Kik.on("receivedgroupgif", (group, sender, gif) => {
+});
+Kik.on("receivedgroupsticker", (group, sender, sticker) => {
+});
+Kik.on("receivedgroupsysmsg", (group, sender, sysmsg) => {
+});
+Kik.on(`receivedgrouptyping`, (group, sender, isTyping) => {
+});
+Kik.on(`userleftgroup`, (group, sender, kickedBy) => {
+});
+Kik.on(`userjoinedgroup`, (group, sender, invitedBy) => {
+});
+Kik.on(`joinedgroup`, (group, users, msg) => {
 });
 
-/*PRIVATE EVENTS*/
-Kik.on("receivedprivatemsg", async (sender, msg) => {
-    await Kik.sendImage(sender.jid, "path/to/img.png", false, false);
-    Kik.sendMessage(sender.jid, msg, (delivered, read) => {
-        if(delivered){
-            console.log(`PRIVATE: ${sender.jid} PM read`)
-        }else if(read){
-            console.log(`PRIVATE: ${sender.jid} PM delivered`)
-        }
-    });
-    console.log(`PRIVATE: [${sender.displayName}]: ${msg}`)
+//[PRIVATE]
+Kik.on(`receivedprivatefriendsearch`, (sender) => {
 });
-Kik.on("privatetyping", (sender, isTyping) => {
-    if(isTyping){
-        console.log(`PRIVATE: ${sender.jid} is typing`)
-    }else{
-        console.log(`PRIVATE: ${sender.jid} stopped typing`)
-    }
+Kik.on(`receivedprivatefriendmention`, (sender) => {
+});
+Kik.on(`receivedprivatemsg`, (sender, msg) => {
+});
+Kik.on("receivedprivateimg", (sender, img) => {
+});
+Kik.on("receivedprivatevid", (sender, vid) => {
+});
+Kik.on("receivedprivategif", (sender, gif) => {
+});
+Kik.on("receivedprivatesticker", (sender, sticker) => {
+});
+Kik.on("receivedprivatesysmsg", (sender, sysmsg) => {
+});
+Kik.on(`receivedprivatetyping`, (sender, isTyping) => {
 });
 
 Kik.connect();
-

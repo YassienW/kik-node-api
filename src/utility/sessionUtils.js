@@ -13,9 +13,6 @@ sessionUtils.getSession = (username) => {
     }
 };
 sessionUtils.setSession = (username, session) => {
-    if(!fs.existsSync("./sessions")){
-        fs.mkdirSync("./sessions");
-    }
+    if(!fs.existsSync("./sessions")){ fs.mkdirSync("./sessions"); }
     fs.writeFileSync(`./sessions/${username}.json`, JSON.stringify(session));
 };
-

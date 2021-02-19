@@ -1,4 +1,4 @@
-const crypto = require("../cryptoUtils");
+const crypto = require("../../utility/cryptoUtils");
 
 //array of jids/usernames
 module.exports = (usernamesOrJids) => {

@@ -1,24 +1,23 @@
-const crypto = require("../../cryptoUtils");
+const crypto = require("../../utility/cryptoUtils");
 
-module.exports = (firstName, lastName) => {
+module.exports = (newEmail, password) => {
     return({
         iq: {
             _attributes: {
                 type: "set",
-                id: crypto.generateUUID()
+                id: crypto.generateUUID(),
             },
             query: {
                 _attributes: {
                     xmlns: "kik:iq:user-account"
                 },
-                first: {
-                    _text: firstName
+                "email": {
+                    _text: newEmail
                 },
-                last: {
-                    _text: lastName
+                "passkey-e": {
+                    _text: password
                 }
             }
         }
     });
 };
-

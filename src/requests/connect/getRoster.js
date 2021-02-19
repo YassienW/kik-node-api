@@ -1,4 +1,4 @@
-const crypto = require("../../cryptoUtils");
+const crypto = require("../../utility/cryptoUtils");
 
 module.exports = () => {
     let id = crypto.generateUUID();

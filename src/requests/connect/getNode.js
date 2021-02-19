@@ -1,5 +1,5 @@
-const config = require("../config"),
-    crypto = require("../cryptoUtils");
+const config = require("../../utility/config"),
+    crypto = require("../../utility/cryptoUtils");
 
 module.exports = (username, password, deviceID, androidID, captchaResponse) => {
     return({

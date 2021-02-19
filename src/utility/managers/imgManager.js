@@ -1,8 +1,8 @@
 const fs = require("fs"),
-    config = require("./config"),
+    config = require("kik-node-api/src/utility/config"),
     {blockhashData} = require("blockhash"),
-    cryptoUtils = require("./cryptoUtils"),
-    sharp = require("sharp"),
+    cryptoUtils = require("kik-node-api/src/utility/cryptoUtils"),
+    sharp = require("../noSharp"), //removed dependency on native module sharp
     axios = require("axios"),
     https = require("https");
 
@@ -28,17 +28,22 @@ class ImageManager {
         }
     }
     async uploadImg(imgPath){
-        const image = sharp(imgPath);
+        const image = await sharp(imgPath);
         const buffer = await image.jpeg().toBuffer();
         const raw = await image.jpeg().raw().toBuffer({resolveWithObject: true});
-
+        
         const size = buffer.byteLength;
         const md5 = cryptoUtils.bufferToMd5(buffer);
         const sha1 = cryptoUtils.bufferToSha1(buffer);
         const previewBase64 = buffer.toString("base64");
         const previewSha1 = cryptoUtils.bufferToSha1(buffer);
-        const previewBlockhash = blockhashData({data: raw.data, height: raw.info.height, width: raw.info.width},
-            16, 2);
+        const previewBlockhash = blockhashData(
+            {
+                data: raw.data,
+                height: raw.info.height,
+                width: raw.info.width
+            }, 16, 2
+        );
 
         const contentId = cryptoUtils.generateUUID();
         const url = `https://platform.kik.com/content/files/${contentId}`;
@@ -98,13 +103,13 @@ class ImageManager {
                 });
 
             }).on("error", (err) => {
-                console.log("Error downloading image:");
-                console.log(err);
+                //console.log("Error downloading image:");
+                //console.log(err);
             });
 
         }).on("error", (err) => {
-            console.log("Error downloading image:");
-            console.log(err);
+            //console.log("Error downloading image:");
+            //console.log(err);
         });
     }
 }

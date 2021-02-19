@@ -1,0 +1,2 @@
+var data = JSON.parse('<message xmlns="jabber:client" to="{JID}" type="chat" id="{UUID}"><keys><msg/><body/></keys><kik qos="true" app="chat" push="true" timestamp="{TS}" hop="true"/><flag></flag></message>');
+console.log(data)

@@ -1,6 +1,6 @@
-const crypto = require("../../cryptoUtils");
+const crypto = require("../../utility/cryptoUtils");
 
-//you must use the raw jid here
+//parsed jids work here
 module.exports = (jid) => {
     return({
         iq: {
@@ -12,7 +12,7 @@ module.exports = (jid) => {
                 _attributes: {
                     xmlns: "kik:iq:friend"
                 },
-                remove: {
+                add: {
                     _attributes: {
                         jid: jid
                     }

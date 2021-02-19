@@ -1,4 +1,4 @@
-const crypto = require("../../cryptoUtils");
+const crypto = require("../../utility/cryptoUtils");
 
 //true bans, false unbans
 module.exports = (groupJid, userJid, bool) => {

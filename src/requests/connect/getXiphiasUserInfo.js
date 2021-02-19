@@ -1,5 +1,5 @@
-const crypto = require("../cryptoUtils"),
-    protobuf = require("../protobuf/protobufParser");
+const crypto = require("../../utility/cryptoUtils"),
+    protobuf = require("../../protobuf/protobufParser");
 
 //array of jids
 module.exports = (jids) => {

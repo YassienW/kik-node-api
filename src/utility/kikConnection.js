@@ -29,11 +29,11 @@ class KikConnection extends EventEmitter{
             //before passing it to the client, to make sure it is a full message, note this ONLY works if the packet
             //is split to 2, 3 would break
 
-            // packets =  [data[s:s+16384].encode() for s in range(0, len(data), 16384)]
+            //packets = [data[s:s+16384].encode() for s in range(0, len(data), 16384)]
             //return list(packets)
             
             if(data.length >= 16384){
-                // this.prevPacket = data;
+                //this.prevPacket = data;
                 this.packets.push(data);
             }else{
                 let fullPacket;
@@ -43,12 +43,11 @@ class KikConnection extends EventEmitter{
                     this.packets = [];
                     // console.log("its a big packet");
                     // console.log(fullPacket);
-                } else{
+                }else{
                     fullPacket = lastPacket;
                     this.packets = [];
                 }
                 // let fullPacket = data;
-
                 this.emit("data", new JSSoup(fullPacket));
                 this.logger.log("raw", `Received data (${fullPacket.length}): ${fullPacket}`);
             }

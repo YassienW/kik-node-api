@@ -72,8 +72,6 @@ Kik = new KikClient({
     username: "username",
     password: "1234",
     promptCaptchas: true,
-    trackUserInfo: true,
-    trackFriendInfo: true
 });
 
 Kik.connect()
@@ -84,11 +82,8 @@ Kik.connect()
 
 `promptCaptchas`: prompt in the console to solve captchas. If not you must handle it yourself using the [event](#received-captcha)
 
-`trackUserInfo`: track users and return their usernames and display names in the events when possible
+The user object:
 
-`trackFriendInfo`: track friends and return their usernames and display names in the events when possible
-
-All users are represented in a js object that looks like this:
 ```
 user: { 
     jid: "kikteam@talk.kik.com", 
@@ -97,7 +92,7 @@ user: {
     pic: "http://profilepics.cf.kik.com/luN9IXX3a4sks-RzyiC7xlK-HdE"
 }
 ```
-groups are represented in the following js object:
+The group object
 ```
 group: {
     jid: "1100221067977_g@groups.kik.com",
@@ -168,109 +163,84 @@ Kik.on("receivedjidinfo", (users) => {
 ##### Received Group Message
 
 ```javascript
-Kik.on("receivedgroupmsg", (group, sender, msg) => {
-    console.log(`Received message from ${sender.jid} in group ${group.jid}`)
+Kik.on("receivedgroupmsg", (groupJid, senderJid, msg) => {
+    console.log(`Received message from ${senderJid} in group ${groupJid}`)
 })
 ```
-`group`: a [`group`](#getting-started) object representing the group where the message was sent
 
-`sender`: a [`user`](#getting-started) object representing the message sender
-
-`msg`: the received message
 
 ##### Received Group Image
 
 ```javascript
-Kik.on("receivedgroupimg", (group, sender, img) => {
+Kik.on("receivedgroupimg", (groupJid, senderJid, img) => {
     console.log(`Received image from ${sender.jid} in group ${group.jid}`)
 })
 ```
-`group`: a [`group`](#getting-started) object representing the group where the message was sent
-
-`sender`: a [`user`](#getting-started) object representing the message sender
-
 `img`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the image
-
 
 ##### Group is Typing
 
 ```javascript
-Kik.on("grouptyping", (group, sender, isTyping) => {
+Kik.on("grouptyping", (groupJid, senderJid, isTyping) => {
     if(isTyping){
-        console.log(`${sender.jid} is typing in ${group.jid}`)
+        console.log(`${senderJid} is typing in ${groupJid}`)
     }else{
-        console.log(`${sender.jid} stopped typing in ${group.jid}`)
+        console.log(`${senderJid} stopped typing in ${groupJid}`)
     }
 })
 ```
-`group`: a [`group`](#getting-started) object representing the group where the message was sent
-
-`sender`: a [`user`](#getting-started) object representing the message sender
-
-`isTyping`: true if the user is typing, false if he stopped
+`isTyping`: true if the user is typing, false if they stopped
 
 ##### User Left Group
 
 ```javascript
-Kik.on("userleftgroup", (group, user, kickedBy) => {
-    console.log(`${user.jid} left the group: ${group.jid}`)
+Kik.on("userleftgroup", (groupJid, userJid, wasKicked) => {
+    console.log(`${userJid} left the group: ${groupJid}`)
 })
 ```
-`group`: a [`group`](#getting-started) object representing the group
-
-`user`: WIP
-
-`kickedBy`: WIP
+`wasKicked`: `true` if the user was kicked
 
 ##### User Joined Group
 
 ```javascript
-Kik.on("userjoinedgroup", (group, user, invitedBy) => {
-    console.log(`${user.jid} joined the group: ${group.jid}`)
+Kik.on("userjoinedgroup", (groupJid, userJid, wasInvited) => {
+    console.log(`${userJid} joined the group: ${groupJid}`)
 })
 ```
-`group`: a [`group`](#getting-started) object representing the group
 
-`user`: WIP
-
-`invitedBy`: WIP
+`wasInvited`: `true` if the user was invited
 
 #### Private Events 
 ##### Received Private Message
 
 ```javascript
-Kik.on("receivedprivatemsg", (sender, msg) => {
-    console.log(`Received message from ${sender.jid}`)
+Kik.on("receivedprivatemsg", (senderJid, msg) => {
+    console.log(`Received message from ${senderJid}`)
 })
 ```
-`sender`: a [`user`](#getting-started) object representing the message sender
-
 `msg`: the received message
 
 ##### Received Private Image
 
 ```javascript
-Kik.on("receivedprivateimg", (sender, img) => {
-    console.log(`Received image from ${sender.jid}`)
+Kik.on("receivedprivateimg", (senderJid, img) => {
+    console.log(`Received image from ${senderJid}`)
 })
 ```
-`sender`: a [`user`](#getting-started) object representing the message sender
 
 `img`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the image
 
 ##### Private Is Typing
 
 ```javascript
-Kik.on("privatetyping", (sender, isTyping) => {
+Kik.on("privatetyping", (senderJid, isTyping) => {
     if(isTyping){
-        console.log(`${sender.jid} is typing`)
+        console.log(`${senderJid} is typing`)
     }else{
-        console.log(`${sender.jid} stopped typing`)
+        console.log(`${senderJid} stopped typing`)
     }
 })
 ```
-`sender`: a [`user`](#getting-started) object representing the message sender
-
 `isTyping`: true if the user is typing, false if he stopped
 
 ### Requests
@@ -286,6 +256,8 @@ Kik.getRoster((groups, friends) => {
     
 });
 ```
+
+See [received roster](#received-roster) for response information
 
 ##### Get User Info
 

@@ -33,31 +33,6 @@ module.exports = class KikClient extends EventEmitter {
         this.dataHandler = new DataHandler(this);
         this.logger = new Logger(["info", "warning", "error"], this.params.username);
 
-        //used for tracking
-        this.groups = [];
-        this.friends = [];
-        this.users = [];
-
-        this.on("receivedroster", (groups, friends) => {
-            this.groups = groups;
-            if(this.params.trackUserInfo){
-                //perhaps i could combine and send to make it more efficient, depending on the rate limit
-                this.groups.forEach((group) => {
-                    this.getUserInfo(group.users.map(({ jid }) => jid), false);
-                });
-            }
-            if(this.params.trackFriendInfo){
-                this.friends = friends;
-            }
-        });
-        this.on("receivedjidinfo", (users) => {
-            if(this.params.trackUserInfo){
-                this.users.push(...users);
-            }
-        });
-        this.on("userleftgroup", (user) => {
-            this.users.splice(user, 1);
-        });
         this.on("receivedcaptcha", (captchaUrl) => {
             if(this.params.promptCaptchas){
                 let stdin = process.stdin, stdout = process.stdout;

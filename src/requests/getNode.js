@@ -73,7 +73,7 @@ module.exports = (username, password, deviceID, androidID, captchaResponse) => {
                 }
             }
         }
-		Object.assign(loginNode, captchaField);
+        Object.assign(loginNode, captchaField);
 	}
 	
 	return loginNode;

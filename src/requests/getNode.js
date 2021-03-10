@@ -3,7 +3,7 @@ const config = require("../config"),
 
 module.exports = (username, password, deviceID, androidID, captchaResponse) => {
 
-	let loginNode = ({
+    let loginNode = ({
         iq: {
             _attributes: {
                 type: "set",
@@ -64,17 +64,15 @@ module.exports = (username, password, deviceID, androidID, captchaResponse) => {
             }
         }
     });
-	
-	if (captchaResponse !== undefined) {
-		
-		let captchaField = {
-			challenge: {
+
+    if (captchaResponse !== undefined) {	
+        let captchaField = {
+            challenge: {
                 response: {
                     _text: captchaResponse
                 }
             }
-		}
-		
+        }
 		Object.assign(loginNode, captchaField);
 	}
 	

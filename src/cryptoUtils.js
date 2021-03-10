@@ -35,7 +35,7 @@ cryptoUtils.generateUUID = () => {
 
 // only needed for "k" stanza
 cryptoUtils.makeKikTimestamp = () => {
-	let j = new Date().getTime();
+    let j = new Date().getTime();
 	
     let j2 = (((j & 65280) >> 8) ^ ((j & 16711680) >> 16) ^ ((j & -16777216) >> 24)) & 30;
 	
@@ -47,11 +47,11 @@ cryptoUtils.makeKikTimestamp = () => {
         j3 = ((function (n) { return n < 0 ? Math.ceil(n) : Math.floor(n); })(j3 / 2)) * 2;
     }
 	
-	let bigInt2 = bigInt(j2);
-	let bigInt3 = bigInt(j3).shiftLeft(5);
-	let bigInt4 = bigInt(j).and(-255);
+    let bigInt2 = bigInt(j2);
+    let bigInt3 = bigInt(j3).shiftLeft(5);
+    let bigInt4 = bigInt(j).and(-255);
 
-	return bigInt4.or(bigInt3).or(bigInt2).toString();
+    return bigInt4.or(bigInt3).or(bigInt2).toString();
 };
 
 //used internally only, the values received here have to be of type bigInt

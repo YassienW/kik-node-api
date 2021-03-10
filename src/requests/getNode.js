@@ -2,7 +2,8 @@ const config = require("../config"),
     crypto = require("../cryptoUtils");
 
 module.exports = (username, password, deviceID, androidID, captchaResponse) => {
-    return({
+
+	let loginNode = ({
         iq: {
             _attributes: {
                 type: "set",
@@ -28,7 +29,7 @@ module.exports = (username, password, deviceID, androidID, captchaResponse) => {
                     _text: "310260"
                 },
                 "install-date": {
-                    _text: "1494078709023"
+                    _text: new Date().getTime() - 15000 - Math.floor(Math.random() * 30000) + 1
                 },
                 "device-type": {
                     _text: "android"
@@ -37,7 +38,7 @@ module.exports = (username, password, deviceID, androidID, captchaResponse) => {
                     _text: "generic"
                 },
                 "logins-since-install": {
-                    _text: "1"
+                    _text: "0"
                 },
                 version: {
                     _text: config.kikVersionInfo.version
@@ -59,14 +60,24 @@ module.exports = (username, password, deviceID, androidID, captchaResponse) => {
                 },
                 model: {
                     _text: "Samsung Galaxy S5 - 4.4.4 - API 19 - 1080x1920"
-                },
-                challenge: {
-                    response: {
-                        _text: captchaResponse
-                    }
                 }
             }
         }
     });
+	
+	if (captchaResponse !== undefined) {
+		
+		let captchaField = {
+			challenge: {
+                response: {
+                    _text: captchaResponse
+                }
+            }
+		}
+		
+		Object.assign(loginNode, captchaField);
+	}
+	
+	return loginNode;
 };
 

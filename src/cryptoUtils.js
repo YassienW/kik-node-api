@@ -32,6 +32,28 @@ cryptoUtils.generateUUID = () => {
         {prefix: false});
     return `${final.slice(0, 8)}-${final.slice(8, 12)}-${final.slice(12,16)}-${final.slice(16, 20)}-${final.slice(20)}`;
 };
+
+// only needed for "k" stanza
+cryptoUtils.makeKikTimestamp = () => {
+	let j = new Date().getTime();
+	
+    let j2 = (((j & 65280) >> 8) ^ ((j & 16711680) >> 16) ^ ((j & -16777216) >> 24)) & 30;
+	
+    let j3 = (j & 224) >> 5;
+	
+    if (j2 % 4 === 0) {
+        j3 = ((function (n) { return n < 0 ? Math.ceil(n) : Math.floor(n); })(j3 / 3)) * 3;
+    } else {
+        j3 = ((function (n) { return n < 0 ? Math.ceil(n) : Math.floor(n); })(j3 / 2)) * 2;
+    }
+	
+	let bigInt2 = bigInt(j2);
+	let bigInt3 = bigInt(j3).shiftLeft(5);
+	let bigInt4 = bigInt(j).and(-255);
+
+	return bigInt4.or(bigInt3).or(bigInt2).toString();
+};
+
 //used internally only, the values received here have to be of type bigInt
 function UUIDSubFunc(i, j) {
     if (bigInt(j).compare(32) === 1) {
@@ -77,8 +99,14 @@ cryptoUtils.generateSignature = (kikVersion, timestamp, jid, sid) => {
         "Q5XHlAMo9qhAiEA43zuIMknJSGwa2zLt/3FmVnuCInD6Oun5dbcYnqraJo=\n-----END RSA PRIVATE KEY----- ";
 
     let data = crypto.createHash("sha256").update(`${jid}:${kikVersion}:${timestamp}:${sid}`).digest("hex");
-    return crypto.createSign("RSA-SHA1").update(data).sign(privateKeyPem, "base64");
+    let out = crypto.createSign("RSA-SHA1").update(data).sign(privateKeyPem, "base64");
+	
+	// Kik expects a base64 url encoding with no padding
+	out = out.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, "");
+	
+	return out;
 };
+
 //receives an object and sorts it according to kik's sekrit crypto algorithms then returns it as JS object
 //if the object i return doesn't preserve order, i could return JSON instead
 cryptoUtils.sortPayload = (object) => {
@@ -146,6 +174,7 @@ function byteToSignedInt(byte){
     }
     return byte;
 }
+
 cryptoUtils.generateImageVerification = (contentId, appId) => {
     const salt = "YA=57aSA!ztajE5";
     return crypto.createHash("sha1").update(`${salt}${contentId}${appId}`).digest("hex");

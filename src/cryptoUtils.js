@@ -36,15 +36,13 @@ cryptoUtils.generateUUID = () => {
 // only needed for "k" stanza
 cryptoUtils.makeKikTimestamp = () => {
     let j = new Date().getTime();
-	
     let j2 = (((j & 65280) >> 8) ^ ((j & 16711680) >> 16) ^ ((j & -16777216) >> 24)) & 30;
-	
     let j3 = (j & 224) >> 5;
 	
     if (j2 % 4 === 0) {
-        j3 = ((function (n) { return n < 0 ? Math.ceil(n) : Math.floor(n); })(j3 / 3)) * 3;
+        j3 = Math.floor(j3 / 3) * 3;
     } else {
-        j3 = ((function (n) { return n < 0 ? Math.ceil(n) : Math.floor(n); })(j3 / 2)) * 2;
+        j3 = Math.floor(j3 / 2) * 2;
     }
 	
     let bigInt2 = bigInt(j2);

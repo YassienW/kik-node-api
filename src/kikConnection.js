@@ -8,16 +8,13 @@ class KikConnection extends EventEmitter{
     constructor(logger, callback){
         super();
         this.logger = logger;
-        this.isConnected = false;
 
         this.connect();
         this.socket.on("connect", () => {
             this.logger.log("info", "Connected to kik");
-            this.isConnected = true;
             callback();
         });
         this.socket.on("end", () => {
-            this.isConnected = false;
             callback("Server ended");
         });
         this.socket.on("error", err => {

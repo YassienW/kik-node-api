@@ -59,7 +59,7 @@ module.exports = class KikClient extends EventEmitter {
         });
     }
     connect(onConnected){
-        if(!this.connection || !this.connection.isConnected){
+        if(!this.connection || this.connection.socket.destroyed){
             this.connection = new KikConnection(this.logger, err => {
                 if(err){
                     this.logger.log("error", err);
@@ -75,21 +75,21 @@ module.exports = class KikClient extends EventEmitter {
             onConnected();
         }
     }
-    authenticate(username, password){
-        if(username && !password || password && !username){
-            throw new Error("Username and password must be provided together, check your authenticate call");
+    authenticate(usernameOrEmail, password){
+        if(usernameOrEmail && !password || password && !usernameOrEmail){
+            throw new Error("Username/email and password must be provided together, check your authenticate call");
         }
         this.connect(() => {
-            if(username && password) {
-                this.username = username;
+            if(usernameOrEmail && password) {
+                this.username = usernameOrEmail;
                 this.password = password;
-                this.session = sessionUtils.getSession(username);
+                this.session = sessionUtils.getSession(usernameOrEmail);
                 if(!this.session){
                     this.session = sessionUtils.createSession();
                 }
                 if(this.session.node){
-                    this.imgManager = new ImageManager(username, password, this.session.node, true);
-                    this.authRequest(username, password);
+                    this.imgManager = new ImageManager(usernameOrEmail, password, this.session.node, true);
+                    this.authRequest(usernameOrEmail, password);
                 }else{
                     this.getNode();
                 }

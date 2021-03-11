@@ -16,7 +16,7 @@ class Logger {
         if(this.types.includes(type)){
             console.log(logTxt);
         }
-        fs.appendFileSync(`./logs/${this.username.match(/\\S+@\\S+\\.\\S+/)? this.username : `TEMP_${this.username}`}.txt`,
+        fs.appendFileSync(`./logs/${this.username.match(/\\S+@\\S+\\.\\S+/)? `TEMP_${this.username}` : this.username}.txt`,
             `${logTxt}\n`);
     }
     updateUsername(newUsername){

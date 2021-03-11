@@ -8,16 +8,16 @@ class KikConnection extends EventEmitter{
     constructor(logger, callback){
         super();
         this.logger = logger;
+        this.isConnected = false;
 
-        this.socket = tls.connect({
-            host: "talk1110an.kik.com",
-            port: 5223
-        });
+        this.connect();
         this.socket.on("connect", () => {
             this.logger.log("info", "Connected to kik");
+            this.isConnected = true;
             callback();
         });
         this.socket.on("end", () => {
+            this.isConnected = false;
             callback("Server ended");
         });
         this.socket.on("error", err => {
@@ -31,7 +31,7 @@ class KikConnection extends EventEmitter{
 
             // packets =  [data[s:s+16384].encode() for s in range(0, len(data), 16384)]
             //return list(packets)
-            
+
             if(data.length >= 16384){
                 // this.prevPacket = data;
                 this.packets.push(data);
@@ -53,7 +53,7 @@ class KikConnection extends EventEmitter{
                 this.logger.log("raw", `Received data (${fullPacket.length}): ${fullPacket}`);
             }
 
-            //old method 
+            //old method
             // if(data.length >= 16384){
             //     this.prevPacket = data;
             // }else{
@@ -65,6 +65,12 @@ class KikConnection extends EventEmitter{
             //     this.emit("data", new JSSoup(fullPacket));
             //     this.logger.log("raw", `Received data (${fullPacket.length}): ${fullPacket}`);
             // }
+        });
+    }
+    connect(){
+        this.socket = tls.connect({
+            host: "talk1110an.kik.com",
+            port: 5223
         });
     }
     disconnect(){

@@ -15,10 +15,12 @@ class DataHandler{
         //data here is a JSSoup element i can directly consume data from
         if(data.find("k")) {
             if(data.find("k").attrs.ts){
-                this.client.emit("authenticated");
+                this.client.emit("authenticated", false);
                 this.client.getRoster();
             }else{
-                this.client.getNode();
+                if(!this.client.username){
+                    this.client.emit("authenticated", true);
+                }
             }
         }else if(data.find("iq")){
             let id = data.find("iq").attrs.id;
@@ -32,7 +34,6 @@ class DataHandler{
             //do nothing for now
         }else{
             this.client.logger.log("info", "Received Unhandled Data");
-
         }
     }
 }

@@ -1,7 +1,28 @@
 const config = require("../config"),
-    crypto = require("../cryptoUtils");
+    crypto = require("../cryptoUtils"),
+    {device} = require("../config");
 
-module.exports = (username, password, deviceID, androidID, captchaResponse) => {
+module.exports = (usernameOrEmail, password, deviceID, androidID, captchaResponse) => {
+    let variableXml;
+    if(usernameOrEmail.match(/\S+@\S+\.\S+/)){
+        variableXml = {
+            email: {
+                _text: usernameOrEmail
+            },
+            "passkey-e": {
+                _text: crypto.generatePasskey(usernameOrEmail, password)
+            },
+        };
+    }else{
+        variableXml = {
+            username: {
+                _text: usernameOrEmail
+            },
+            "passkey-u": {
+                _text: crypto.generatePasskey(usernameOrEmail, password)
+            },
+        };
+    }
     return({
         iq: {
             _attributes: {
@@ -12,12 +33,7 @@ module.exports = (username, password, deviceID, androidID, captchaResponse) => {
                 _attributes: {
                     xmlns: "jabber:iq:register"
                 },
-                username: {
-                    _text: username
-                },
-                "passkey-u": {
-                    _text: crypto.generatePasskey(username, password)
-                },
+                ...variableXml,
                 "device-id": {
                     _text: deviceID
                 },
@@ -31,10 +47,10 @@ module.exports = (username, password, deviceID, androidID, captchaResponse) => {
                     _text: "1494078709023"
                 },
                 "device-type": {
-                    _text: "android"
+                    _text: device.type
                 },
                 brand: {
-                    _text: "generic"
+                    _text: device.brand
                 },
                 "logins-since-install": {
                     _text: "1"
@@ -46,7 +62,7 @@ module.exports = (username, password, deviceID, androidID, captchaResponse) => {
                     _text: "en_US"
                 },
                 "android-sdk": {
-                    _text: "19"
+                    _text: device.androidSdk
                 },
                 "registrations-since-install": {
                     _text: "0"
@@ -58,7 +74,7 @@ module.exports = (username, password, deviceID, androidID, captchaResponse) => {
                     _text: androidID
                 },
                 model: {
-                    _text: "Samsung Galaxy S5 - 4.4.4 - API 19 - 1080x1920"
+                    _text: device.model
                 },
                 challenge: {
                     response: {

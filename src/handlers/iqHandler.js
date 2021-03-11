@@ -9,7 +9,16 @@ module.exports = (client, callbacks, id, data) => {
 
     if(xmlns === "jabber:iq:register"){
         if(data.find("node")){
-            client.setNode(data.find("node").text);
+            const username = data.find("username");
+            //this happens in two cases, after creating a new account or after requesting node
+            client.setNode(data.find("node").text, username && username.text);
+
+            //send registration callback
+            let callback = callbacks.get(id);
+            if(callback){
+                callback();
+                callbacks.delete(id);
+            }
         }else if(data.find("captcha-url")){
             client.emit("receivedcaptcha", data.find("captcha-url").text);
         }else{

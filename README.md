@@ -24,6 +24,7 @@ npm i kik-node-api
 ##### Events
 
 1. [The Basics](#the-basics)
+    * [Connected](#connected)
     * [Authenticated](#authenticated)
     * [Received Roster](#received-roster)
     * [Received Captcha](#received-captcha)
@@ -42,10 +43,14 @@ npm i kik-node-api
 ##### Requests
 
 1. [Common Requests](#common-requests)
+    * [Create Account](#create-account)
+    * [Authenticate](#authenticate)
     * [Get Roster](#get-roster)
     * [Get User Info](#get-user-info)
     * [Send Message](#send-message)
     * [Send Image](#send-image)
+    * [Add Friend](#add-friend)
+    * [Remove Friend](#remove-friend)
 2. [Group Requests](#group-requests)
     * [Search Groups](#search-groups)
     * [Join Group](#join-group)
@@ -69,12 +74,13 @@ to events and send requests to kik
 const KikClient = require("kik-node-api");
 
 Kik = new KikClient({
-    username: "username",
-    password: "1234",
-    promptCaptchas: true,
+   promptCaptchas: true,
+   device: {
+       
+   }
 });
 
-Kik.connect()
+Kik.authenticate(username, password)
 ```
 `username`: your kik account's username 
 
@@ -121,13 +127,24 @@ Kik.on(eventname, (param1, param2) => {
 
 Below are the details of all events emitted by the `KikClient` class
 
+##### Connected
+
+```javascript
+Kik.on("connected", () => {
+    console.log("Connected")
+})
+```
+
 ##### Authenticated
 
 ```javascript
-Kik.on("authenticated", () => {
+Kik.on("authenticated", (isAnonymous) => {
     console.log("Authenticated")
 })
 ```
+`isAnonymous`: if `true` the authentication was done anonymously
+(no username/password)
+
 ##### Received Roster
 
 ```javascript
@@ -248,6 +265,23 @@ Kik.on("privatetyping", (senderJid, isTyping) => {
 Note that all callback functions can be excluded
 
 #### Common Requests
+
+##### Create Account
+
+```javascript
+Kik.createAccount(email, username, password, firstName, lastName, birthdate, captchaResponse, () => {
+    console.log('Account created successfully')
+})
+```
+
+##### Authenticate
+
+```javascript
+Kik.authenticate(usernameOrEmail, password)
+```
+
+If username and password are not provided, the client will
+use anonymous authentication
 
 ##### Get Roster
 

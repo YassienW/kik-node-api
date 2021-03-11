@@ -2,7 +2,7 @@ module.exports = () => {
     return({
         k: {
             _attributes: {
-                anon: "",
+                anon: "1",
             }
         }
     });

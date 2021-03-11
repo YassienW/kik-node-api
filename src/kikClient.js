@@ -4,7 +4,7 @@ const EventEmitter = require("events"),
     Logger = require("./logger"),
     ImageManager = require("./imgManager"),
     sessionUtils = require("./sessionUtils"),
-    initialRequest = require("./requests/initialRequest"),
+    anonymousAuth = require("./requests/anonymousAuth"),
     getNode = require("./requests/getNode"),
     auth = require("./requests/auth"),
     getRoster = require("./requests/account/getRoster"),
@@ -23,7 +23,8 @@ const EventEmitter = require("events"),
     setEmail = require("./requests/account/setEmail"),
     setPassword = require("./requests/account/setPassword"),
     searchGroups = require("./requests/group/searchGroups"),
-    joinGroup = require("./requests/group/joinGroup");
+    joinGroup = require("./requests/group/joinGroup"),
+    createAccount = require("./requests/account/createAccount");
 
 module.exports = class KikClient extends EventEmitter {
     constructor(params){
@@ -31,69 +32,117 @@ module.exports = class KikClient extends EventEmitter {
 
         this.params = params;
         this.dataHandler = new DataHandler(this);
-        this.logger = new Logger(["info", "warning", "error"], this.params.username);
+        this.logger = new Logger(["info", "warning", "error"], "_ANON_");
+        //this session is temporary and will be replaced by the saved session if user logs in
+        this.session = sessionUtils.createSession();
 
         this.on("receivedcaptcha", (captchaUrl) => {
             if(this.params.promptCaptchas){
                 let stdin = process.stdin, stdout = process.stdout;
 
-                console.log("Please resolve captcha by going to: " + captchaUrl);
+                console.log("Please resolve captcha by going to: " + captchaUrl +
+                    "&callback_url=https://kik.com/captcha-url");
                 stdout.write("Captcha response: ");
 
                 stdin.once("data", (data) => {
-                    this.resolveCaptcha(data.toString().trim());
+                    const captchaResponse = data.toString().trim();
+                    if(this.createAccountParams){
+                        const {email, username, password, firstName, lastName, birthdate, callback}
+                            = this.createAccountParams;
+                        this.createAccount(email, username, password, firstName, lastName, birthdate, captchaResponse,
+                            callback);
+                    }else{
+                        this.getNode(captchaResponse);
+                    }
                 });
             }
         });
     }
-    connect(){
-        this.connection = new KikConnection(this.logger, err => {
-            if(err){
-                this.logger.log("error", err);
-            }else{
-                //don't read it from file again if it's already set
-                this.session = (this.session? this.session : sessionUtils.getSession(this.params.username));
-                if(this.session.node){
-                    this.authRequest();
+    connect(onConnected){
+        if(!this.connection || !this.connection.isConnected){
+            this.connection = new KikConnection(this.logger, err => {
+                if(err){
+                    this.logger.log("error", err);
                 }else{
-                    this.initiateNodeConnection();
+                    this.emit("connected");
+                    onConnected();
                 }
-                //we have to initialize imgManager after we have the session node
-                this.imgManager = new ImageManager(this.params.username, this.params.password, this.session.node, true);
+            });
+            this.connection.on("data", (data) => {
+                this.dataHandler.handleData(data);
+            });
+        } else {
+            onConnected();
+        }
+    }
+    authenticate(username, password){
+        if(username && !password || password && !username){
+            throw new Error("Username and password must be provided together, check your authenticate call");
+        }
+        this.connect(() => {
+            if(username && password) {
+                this.username = username;
+                this.password = password;
+                this.session = sessionUtils.getSession(username);
+                if(!this.session){
+                    this.session = sessionUtils.createSession();
+                }
+                if(this.session.node){
+                    this.imgManager = new ImageManager(username, password, this.session.node, true);
+                    this.authRequest(username, password);
+                }else{
+                    this.getNode();
+                }
+            }else{
+                this.anonymousAuthRequest();
             }
-        });
-        this.connection.on("data", (data) => {
-            this.dataHandler.handleData(data);
         });
     }
     //used to set the node and start an authorized session
-    setNode(node){
+    setNode(node, username){
         //append the node to the session object
-        this.session = {...this.session, node: node};
-        sessionUtils.setSession(this.params.username, this.session);
-        //we have to disconnect first, then initiate a new connection, with the node set this time
+        this.session = {...this.session, node};
+        sessionUtils.saveSession(username || this.createAccountParams.username, this.session);
+
+        this.logger.log("info", "Disconnecting due to node received");
         this.connection.disconnect();
-        this.connect();
+        // this is not a registration response
+        if(username){
+            //in case of email login
+            this.username = username;
+            this.logger.updateUsername(username);
+            //initiate a new connection, with the node set this time
+            this.logger.log("info", "Reconnecting with node value");
+            this.authenticate(this.username, this.password);
+        }else{
+            this.createAccountParams = null;
+        }
     }
-    //we have to do this before requesting the kik node, but not before auth
-    initiateNodeConnection(){
-        this.logger.log("info", "Initiating kik node connection");
-        this.connection.sendXmlFromJs(initialRequest(), true);
-    }
-    getNode(){
+    getNode(captcha){
         this.logger.log("info", "Requesting kik node");
-        this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password, this.session.deviceID,
-            this.session.androidID));
+        this.anonymousAuthRequest();
+        this.connection.sendXmlFromJs(getNode(this.username, this.password, this.session.deviceID,
+            this.session.androidID, captcha));
     }
-    resolveCaptcha(response){
-        this.logger.log("info", `Resolving captcha with response ${response}`);
-        this.connection.sendXmlFromJs(getNode(this.params.username, this.params.password, this.session.deviceID,
-            this.session.androidID, response));
-    }
-    authRequest(){
+    authRequest(username, password){
         this.logger.log("info", "Sending auth request");
-        this.connection.sendXmlFromJs(auth(this.params.username, this.params.password, this.session.node,
+        this.connection.sendXmlFromJs(auth(username, password, this.session.node,
             this.session.deviceID), true);
+    }
+    anonymousAuthRequest(){
+        this.logger.log("info", "Sending anonymous auth request");
+        this.connection.sendXmlFromJs(anonymousAuth(this.session.deviceID), true);
+    }
+    createAccount(email, username, password, firstName, lastName, birthdate, captchaResponse, callback){
+        this.createAccountParams =
+            {email, username, password, firstName, lastName, birthdate, callback};
+        this.logger.log("info", "Creating account");
+        let req = createAccount(email, username, password, firstName, lastName, birthdate, this.session.deviceID,
+            this.session.androidID, captchaResponse);
+        this.connection.sendXmlFromJs(req.xml);
+        if(callback){
+            this.dataHandler.addCallback(req.id, callback);
+        }
     }
     getRoster(callback){
         this.logger.log("info", "Getting roster");

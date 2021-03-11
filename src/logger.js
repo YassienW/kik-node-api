@@ -16,7 +16,11 @@ class Logger {
         if(this.types.includes(type)){
             console.log(logTxt);
         }
-        fs.appendFileSync(`./logs/${this.username}.txt`, `${logTxt}\n`);
+        fs.appendFileSync(`./logs/${this.username.match(/\\S+@\\S+\\.\\S+/)? this.username : `TEMP_${this.username}`}.txt`,
+            `${logTxt}\n`);
+    }
+    updateUsername(newUsername){
+        this.username = newUsername;
     }
 }
 module.exports = Logger;

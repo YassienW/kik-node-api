@@ -14,7 +14,8 @@ module.exports = (client, callbacks, id, data) => {
                 false, groupJid));
         }else if(data.find("status")){
             let status = data.find("status");
-            //userJid is different for status
+            //userJid and groupJid are different for status
+            groupJid = userJid;
             userJid = status.attrs.jid;
 
             if(status.text.includes("left") || status.text.includes("removed")){

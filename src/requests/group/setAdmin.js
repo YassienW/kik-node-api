@@ -1,4 +1,4 @@
-const crypto = require("../../cryptoUtils");
+const crypto = require("../../helpers/cryptoUtils");
 
 //true promotes, false demotes
 module.exports = (groupJid, userJid, bool) => {

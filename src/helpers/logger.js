@@ -2,8 +2,9 @@ const fs = require("fs");
 
 class Logger {
     //warning, error, info, raw
-    constructor(types, username){
-        this.types = (types? types : ["warning", "error", "info", "raw"]);
+    constructor(fileTypes, consoleTypes, username){
+        this.fileTypes = fileTypes || ["warning", "error", "info", "raw"];
+        this.consoleTypes = consoleTypes || ["warning", "error", "info"];
         this.username = username;
 
         if(!fs.existsSync("./logs")){
@@ -13,11 +14,13 @@ class Logger {
     log(type, msg){
         let date = new Date();
         let logTxt = `[${date.getHours()}:${date.getMinutes()}] ${type.toUpperCase()}: ${msg}`;
-        if(this.types.includes(type)){
+        if(this.consoleTypes.includes(type)){
             console.log(logTxt);
         }
-        fs.appendFileSync(`./logs/${this.username.match(/\\S+@\\S+\\.\\S+/)? `TEMP_${this.username}` : this.username}.txt`,
-            `${logTxt}\n`);
+        if(this.fileTypes.includes(type)){
+            fs.appendFileSync(`./logs/${this.username.match(/\\S+@\\S+\\.\\S+/)? `TEMP_${this.username}` : this.username}.txt`,
+                `${logTxt}\n`);
+        }
     }
     updateUsername(newUsername){
         this.username = newUsername;

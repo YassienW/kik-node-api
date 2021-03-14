@@ -1,4 +1,4 @@
-const crypto = require("../../cryptoUtils");
+const crypto = require("../../helpers/cryptoUtils");
 
 module.exports = (firstName, lastName) => {
     return({
@@ -9,7 +9,7 @@ module.exports = (firstName, lastName) => {
             },
             query: {
                 _attributes: {
-                    xmlns: "kik:iq:user-account"
+                    xmlns: "kik:iq:user-profile"
                 },
                 first: {
                     _text: firstName

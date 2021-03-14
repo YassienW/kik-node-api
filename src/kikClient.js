@@ -1,9 +1,9 @@
 const EventEmitter = require("events"),
     KikConnection = require("./kikConnection"),
     DataHandler = require("./handlers/dataHandler"),
-    Logger = require("./logger"),
-    ImageManager = require("./imgManager"),
-    sessionUtils = require("./sessionUtils"),
+    Logger = require("./helpers/logger"),
+    ImageManager = require("./helpers/imgManager"),
+    sessionUtils = require("./helpers/sessionUtils"),
     anonymousAuth = require("./requests/anonymousAuth"),
     getNode = require("./requests/getNode"),
     auth = require("./requests/auth"),
@@ -30,14 +30,14 @@ module.exports = class KikClient extends EventEmitter {
     constructor(params){
         super();
 
-        this.params = params;
         this.dataHandler = new DataHandler(this);
-        this.logger = new Logger(["info", "warning", "error"], "_ANON_");
+        const {file, console} = params.logger || {};
+        this.logger = new Logger(file, console, "_ANON_");
         //this session is temporary and will be replaced by the saved session if user logs in
         this.session = sessionUtils.createSession();
 
         this.on("receivedcaptcha", (captchaUrl) => {
-            if(this.params.promptCaptchas){
+            if(params.promptCaptchas){
                 let stdin = process.stdin, stdout = process.stdout;
 
                 console.log("Please resolve captcha by going to: " + captchaUrl +
@@ -230,6 +230,9 @@ module.exports = class KikClient extends EventEmitter {
         this.connection.sendXmlFromJs(setPassword(oldPassword, newPassword));
     }
     searchGroups(searchQuery, callback){
+        if(searchQuery.length < 2){
+            throw new Error("Search query must be at least 2 characters long");
+        }
         this.logger.log("info", `Searching groups with term ${searchQuery}`);
         let req = searchGroups(searchQuery);
         this.connection.sendXmlFromJs(req.xml);

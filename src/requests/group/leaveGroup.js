@@ -1,4 +1,4 @@
-const crypto = require("../../cryptoUtils");
+const crypto = require("../../helpers/cryptoUtils");
 
 //you must use the raw jid here
 module.exports = (groupJid) => {

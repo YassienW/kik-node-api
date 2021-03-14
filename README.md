@@ -77,16 +77,19 @@ Kik = new KikClient({
    promptCaptchas: true,
    device: {
        
+   },
+   logger: {
+      file: ["warning", "error", "info", "raw"],
+      console: ["warning", "error", "info", "raw"]
    }
 });
 
 Kik.authenticate(username, password)
 ```
-`username`: your kik account's username 
-
-`password`: your kik account's password
 
 `promptCaptchas`: prompt in the console to solve captchas. If not you must handle it yourself using the [event](#received-captcha)
+
+`logger`: configuration for the logger, the array contains the type of logs
 
 The user object:
 

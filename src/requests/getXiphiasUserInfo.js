@@ -1,4 +1,4 @@
-const crypto = require("../cryptoUtils"),
+const crypto = require("../helpers/cryptoUtils"),
     protobuf = require("../protobuf/protobufParser");
 
 //array of jids

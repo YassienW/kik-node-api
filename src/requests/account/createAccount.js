@@ -1,6 +1,6 @@
-const crypto = require("../../cryptoUtils");
+const crypto = require("../../helpers/cryptoUtils");
 const {kikVersionInfo, device} = require("../../config");
-const {generatePasskey} = require("../../cryptoUtils");
+const {generatePasskey} = require("../../helpers/cryptoUtils");
 
 module.exports = (email, username, password, firstName, lastName, birthdate, deviceId, androidId, captchaResponse) => {
     let id = crypto.generateUUID();

@@ -1,5 +1,5 @@
 const fs = require("fs"),
-    config = require("./config"),
+    config = require("../config"),
     {blockhashData} = require("blockhash"),
     cryptoUtils = require("./cryptoUtils"),
     sharp = require("sharp"),

@@ -1,5 +1,5 @@
 const config = require("../config"),
-    crypto = require("../cryptoUtils");
+    crypto = require("../helpers/cryptoUtils");
 
 module.exports = (deviceID) => {
     let timestamp = "1496333389122";

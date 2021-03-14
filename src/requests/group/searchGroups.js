@@ -1,4 +1,4 @@
-const crypto = require("../../cryptoUtils");
+const crypto = require("../../helpers/cryptoUtils");
 
 module.exports = (searchQuery) => {
     const id = crypto.generateUUID();

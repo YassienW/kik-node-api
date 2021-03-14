@@ -1,4 +1,4 @@
-const crypto = require("../../cryptoUtils");
+const crypto = require("../../helpers/cryptoUtils");
 
 //true adds user, false removes him
 //note that you can only add a user using his raw JID

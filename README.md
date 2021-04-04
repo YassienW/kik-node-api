@@ -9,6 +9,12 @@ A chatting API for kik built with Node.js, based on <https://github.com/tomer800
 
 Join the group chat on kik #kiknodeapi
 
+---
+
+Feeling generous? Send me a BTC donation at `bc1q7fg5r35e4hqaqxgqaleyza9j3k0dm7efknp9lj`
+
+
+
 ## Installation
 
 NPM:

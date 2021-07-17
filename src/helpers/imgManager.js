@@ -65,46 +65,53 @@ class ImageManager {
         await axios.put(url, buffer, {headers});
         return {contentId, size, sha1, previewSha1, previewBlockhash, previewBase64};
     }
-    getImg(url, isPrivate, source){
-        //first request returns a 302 with a url
-        https.get(url, (res) => {
-            //second req returns the actual image
-            https.get(res.headers.location, (res) => {
-                let dataArr = [];
+    async getImg(url, isPrivate, source){
+        return new Promise((resolve, reject) => {
+            //first request returns a 302 with a url
+            https.get(url, async (res) => {
+                //second req returns the actual image
+                https.get(res.headers.location, (res) => {
+                    let dataArr = [];
 
-                res.on("data", (data) => {
-                    dataArr.push(data);
-                });
-                res.on("end", () => {
-                    let buffer = Buffer.concat(dataArr);
-                    let date = new Date().toISOString().substring(0, 10);
+                    res.on("data", (data) => {
+                        dataArr.push(data);
+                    });
+                    res.on("end", () => {
+                        let buffer = Buffer.concat(dataArr);
+                        let date = new Date().toISOString().substring(0, 10);
 
-                    if(this.saveImages){
-                        let imageDirectory = `./images/${this.username}`;
+                        if(this.saveImages){
+                            let imageDirectory = `./images/${this.username}`;
 
-                        if(isPrivate){
-                            imageDirectory += "/private";
-                        }else{
-                            imageDirectory += "/groups";
+                            if(isPrivate){
+                                imageDirectory += "/private";
+                            }else{
+                                imageDirectory += "/groups";
+                            }
+                            imageDirectory += `/${source}`;
+                            //make sure the directory exists, if not create it
+                            if(!fs.existsSync(imageDirectory)){
+                                fs.mkdirSync(imageDirectory);
+                            }
+                            let file_path=`${imageDirectory}/${date}_${Date.now()}.jpeg`;
+                            fs.writeFileSync(file_path, buffer);
+                            resolve(file_path);
+                        } else {
+                            resolve();
                         }
-                        imageDirectory += `/${source}`;
-                        //make sure the directory exists, if not create it
-                        if(!fs.existsSync(imageDirectory)){
-                            fs.mkdirSync(imageDirectory);
-                        }
-                        fs.writeFileSync(`${imageDirectory}/${date}_${Date.now()}.jpeg`, buffer);
-                    }
-                    return buffer;
+                    });
+                }).on("error", (err) => {
+                    console.log("Error downloading image:");
+                    console.log(err);
+                    reject();
                 });
 
             }).on("error", (err) => {
                 console.log("Error downloading image:");
                 console.log(err);
+                reject();
             });
-
-        }).on("error", (err) => {
-            console.log("Error downloading image:");
-            console.log(err);
+            
         });
     }
 }

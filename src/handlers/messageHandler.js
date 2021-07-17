@@ -1,4 +1,4 @@
-module.exports = (client, callbacks, id, data) => {
+module.exports = async (client, callbacks, id, data) => {
     let type = data.find("message").attrs.type;
 
     if(type === "groupchat"){
@@ -38,8 +38,8 @@ module.exports = (client, callbacks, id, data) => {
         }else if(type === "is-typing"){
             client.emit("privatetyping", userJid, data.find("is-typing").attrs.val === "true");
         }else if(data.find("images")){
-            client.emit("receivedprivateimg", userJid, client.imgManager.getImg(data.find("file-url").text,
-                true, userJid));
+            let file_path = await client.imgManager.getImg(data.find("file-url").text, true, userJid);
+            client.emit("receivedprivateimg", userJid, file_path);
         }
     }else if(type === "receipt"){
         let receipt = data.find("receipt").attrs.type;

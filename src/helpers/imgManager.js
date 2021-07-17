@@ -65,11 +65,12 @@ class ImageManager {
         await axios.put(url, buffer, {headers});
         return {contentId, size, sha1, previewSha1, previewBlockhash, previewBase64};
     }
-    async getImg(url, isPrivate, source){
+    async getImg(url, isPrivate, source, file_name){
         return new Promise((resolve, reject) => {
             //first request returns a 302 with a url
             https.get(url, async (res) => {
                 //second req returns the actual image
+                
                 https.get(res.headers.location, (res) => {
                     let dataArr = [];
 
@@ -81,6 +82,7 @@ class ImageManager {
                         let date = new Date().toISOString().substring(0, 10);
 
                         if(this.saveImages){
+                            // ToDo: It should probably be files not images, because its possible to get videos^^
                             let imageDirectory = `./images/${this.username}`;
 
                             if(isPrivate){
@@ -93,7 +95,9 @@ class ImageManager {
                             if(!fs.existsSync(imageDirectory)){
                                 fs.mkdirSync(imageDirectory);
                             }
-                            let file_path=`${imageDirectory}/${date}_${Date.now()}.jpeg`;
+                            let tmp_arr = file_name.split(".");
+                            let file_extension=tmp_arr[tmp_arr.length-1];
+                            let file_path=`${imageDirectory}/${date}_${Date.now()}.${file_extension}`;
                             fs.writeFileSync(file_path, buffer);
                             resolve(file_path);
                         } else {

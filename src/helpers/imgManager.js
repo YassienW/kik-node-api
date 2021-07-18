@@ -70,7 +70,7 @@ class ImageManager {
         let file_name="fu.png";
         //Logger.log("info", `Received data from app: (${data.find("app-name").text})`);
         console.log(`Received data from app: (${data.find("app-name").text})`);
-        if ((data.find("app-name").text=="Gallery") || (data.find("app-name")=="Camera").text) {
+        if ((data.find("app-name").text=="Gallery") || (data.find("app-name").text=="Camera")) {
             file_url=data.find("file-url").text;
             file_name=data.find("file-name").text
         } else if (data.find("app-name").text=="GIF") {

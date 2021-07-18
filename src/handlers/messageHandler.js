@@ -10,8 +10,8 @@ module.exports = async (client, callbacks, id, data) => {
         }else if(data.find("is-typing")){
             client.emit("grouptyping", groupJid, userJid, data.find("is-typing").attrs.val === "true");
         }else if(data.find("images")){
-            // ToDo: see Users
-            let file_path = await client.imgManager.getImg(data.find("file-url").text, false, groupJid, data.find("file-name").text);
+            let parseData = client.imgManager.parseAppData(data);
+            let file_path = await client.imgManager.getImg(parseData.file_url, false, groupJid,parseData.file_name);    
             client.emit("receivedgroupimg", groupJid, userJid, file_path);
         }else if(data.find("status")){
             let status = data.find("status");
@@ -39,8 +39,8 @@ module.exports = async (client, callbacks, id, data) => {
         }else if(type === "is-typing"){
             client.emit("privatetyping", userJid, data.find("is-typing").attrs.val === "true");
         }else if(data.find("images")){
-            // ToDo: You could get gifs with kik... they dont have a file-url... resulting in an error!
-            let file_path = await client.imgManager.getImg(data.find("file-url").text, true, userJid, data.find("file-name").text);
+            let parseData = client.imgManager.parseAppData(data);
+            let file_path = await client.imgManager.getImg(parseData.file_url, true, userJid,parseData.file_name);    
             client.emit("receivedprivateimg", userJid, file_path);
         }
     }else if(type === "receipt"){

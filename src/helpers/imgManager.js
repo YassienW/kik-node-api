@@ -65,6 +65,52 @@ class ImageManager {
         await axios.put(url, buffer, {headers});
         return {contentId, size, sha1, previewSha1, previewBlockhash, previewBase64};
     }
+    parseAppData(data) {
+        let file_url="";
+        let file_name="fu.png";
+        //Logger.log("info", `Received data from app: (${data.find("app-name").text})`);
+        console.log(`Received data from app: (${data.find("app-name").text})`);
+        if ((data.find("app-name").text=="Gallery") || (data.find("app-name")=="Camera").text) {
+            file_url=data.find("file-url").text;
+            file_name=data.find("file-name").text
+        } else if (data.find("app-name").text=="GIF") {
+            file_url=data.find("uris").find("uri").text;
+            file_name=data.find("uris").find("uri").attrs["file-content-tpe"].replace("/",".");
+        } else if (data.find("app-name").text=="Stickers") {
+            let tmp_elements=data.find("extras").findAll("item");
+            for (let i in tmp_elements) {
+                let element=tmp_elements[i];
+                if (element.find("key").text=="sticker_url") { // Probably a Array.Find would work too
+                    file_url=element.find("val").text;
+                    let tmp_urlparts=file_url.split("/");
+                    file_name=tmp_urlparts[tmp_urlparts.length-1];
+                }
+            }
+        }
+        else if (data.find("app-name").text=="Sketch") {
+            let tmp_elements=data.find("extras").findAll("item");
+            for (let i in tmp_elements) {
+                let element=tmp_elements[i];
+                if (element.find("key").text=="jsonData") { // Probably a Array.Find would work too
+                    let jsonData = JSON.parse(element.find("val").text);
+                    file_url=jsonData.image;
+                    file_name="i_dont_see_it.png";
+                }
+            }
+        }
+        else if (data.find("app-name").text=="Memes") {
+            // Sorry i dont get it!
+        }
+
+        if (file_url=="") {
+            //Logger.log("error", `Unknown App!?`);
+            console.error(`Unknown App!?`);
+            //process.exit(1);
+        }
+        console.log("file_url: ", file_url);
+        console.log("file_name: ", file_name);
+        return {"file_url": file_url, "file_name": file_name};
+    }
     async getImg(url, isPrivate, source, file_name){
         return new Promise((resolve, reject) => {
             //first request returns a 302 with a url

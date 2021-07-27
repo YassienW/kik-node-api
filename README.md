@@ -202,7 +202,7 @@ Kik.on("receivedgroupimg", (groupJid, senderJid, img) => {
     console.log(`Received image from ${sender.jid} in group ${group.jid}`)
 })
 ```
-`img`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the image
+`img`: path to the image
 
 ##### Group is Typing
 
@@ -254,7 +254,7 @@ Kik.on("receivedprivateimg", (senderJid, img) => {
 })
 ```
 
-`img`: a [`buffer`](https://nodejs.org/api/buffer.html) object representing the image
+`img`: path to the image
 
 ##### Private Is Typing
 

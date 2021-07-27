@@ -69,13 +69,13 @@ class ImageManager {
         let file_url="";
         let file_name="fu.png";
         //Logger.log("info", `Received data from app: (${data.find("app-name").text})`);
-        console.log(`Received data from app: (${data.find("app-name").text})`);
+        //console.log(`Received data from app: (${data.find("app-name").text})`);
         if ((data.find("app-name").text=="Gallery") || (data.find("app-name").text=="Camera")) {
             file_url=data.find("file-url").text;
             file_name=data.find("file-name").text
         } else if (data.find("app-name").text=="GIF") {
             file_url=data.find("uris").find("uri").text;
-            file_name=data.find("uris").find("uri").attrs["file-content-tpe"].replace("/",".");
+            file_name=data.find("uris").find("uri").attrs["file-content-type"].replace("/",".");
         } else if (data.find("app-name").text=="Stickers") {
             let tmp_elements=data.find("extras").findAll("item");
             for (let i in tmp_elements) {
@@ -104,11 +104,11 @@ class ImageManager {
 
         if (file_url=="") {
             //Logger.log("error", `Unknown App!?`);
-            console.error(`Unknown App!?`);
+            //console.error(`Unknown App!?`);
             //process.exit(1);
         }
-        console.log("file_url: ", file_url);
-        console.log("file_name: ", file_name);
+        //console.log("file_url: ", file_url);
+        //console.log("file_name: ", file_name);
         return {"file_url": file_url, "file_name": file_name};
     }
     async getImg(url, isPrivate, source, file_name){

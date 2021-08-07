@@ -71,6 +71,9 @@ module.exports = class KikClient extends EventEmitter {
             this.connection.on("data", (data) => {
                 this.dataHandler.handleData(data);
             });
+            this.connection.on("diconnected", (data) => {
+                this.emit("disconnected");
+            });
         } else {
             onConnected();
         }

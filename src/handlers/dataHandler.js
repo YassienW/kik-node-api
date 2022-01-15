@@ -21,7 +21,7 @@ class DataHandler {
             } else if (data.find("noauth")) {
                 this.client.emit("loginerrorr", "noauth");
                 // this.client.disconnect();
-                this.client.logger.log("info", "This account is logged in on another account. Please delete sessions folder.");
+                this.client.logger.log("info", "This account is logged in on another client. Please delete sessions folder and retry.");
             } else {
                 this.client.getNode();
             }
